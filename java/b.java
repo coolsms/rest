@@ -12,8 +12,8 @@ public class b {
 	{
 		try{
 			String charset = "UTF-8";
-			String api_key = "NCS52A027B408F5E";
-			String api_secret = "E03D85D35A48F399B2C8E1E84D2337F3";
+			String api_key = "NCS52A57F48C3D32";
+			String api_secret = "5AC44E03CE8E7212D9D1AD9091FA9966";
 			String to = "01048597580";
 			String from = "029302266";
 			String text = "안뇽하세요";
