@@ -5,16 +5,25 @@ import java.net.URLEncoder;
 import java.security.*;
 import javax.crypto.*;
 import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec; import java.security.SignatureException; 
+import javax.crypto.spec.SecretKeySpec; 
+import java.security.SignatureException; 
+import java.util.Random;
 public class b {
 
 	public static void main(String[] args)
+	{
+		//message_send();
+		String ab = salt();
+		System.out.println(ab);
+	}
+
+	static void message_send()
 	{
 		try{
 			String charset = "UTF-8";
 			String api_key = "NCS52A57F48C3D32";
 			String api_secret = "5AC44E03CE8E7212D9D1AD9091FA9966";
-			String to = "01048597580";
+			String to = "01090683469";
 			String from = "029302266";
 			String text = "안뇽하세요";
 			
@@ -64,5 +73,22 @@ public class b {
 		catch(Exception e){
 			System.out.println("Error : " + e.getMessage());
 		}
+	}
+
+	static void salt()
+	{
+		String uniqId = "";
+
+		Random randomGenerator = new Random();
+
+		//length - set the unique Id length
+		for(int length = 1; length <= 10; ++length) 
+		{
+
+			int randomInt = randomGenerator.nextInt(10); //digit range from 0 - 9
+			uniqId += randomInt + "";
+		}
+
+		return uniqId;	
 	}
 }
