@@ -12,6 +12,9 @@ import httplib,urllib,sys,hmac
 class rest:
 	api_key = None
 	api_secret = None
+	uesr_id = None
+	mtype = None
+	imgfile = None
 
 	def __init__(self):
 		self.api_key = None
@@ -33,6 +36,13 @@ class rest:
 		hash.update(str)
 		return string.join(map(lambda v: "%02x" % ord(v), hash.digest()), "")
 
+	def set_type(self, mtype):
+		self.mtype = mtype
+
+	def set_image(self, image):
+		self.imgfile = image
+
+
 	def send(self,to,sender,text):
 		#to = "01048597580,01048597580"
 		#to = "0100000000"
@@ -43,9 +53,12 @@ class rest:
 		signature = hmac.new(self.api_secret, data, md5)
 
 		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
-		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'to':to, 'from':sender, 'text':text, 'datetime':'20131212160000'})
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("POST", "/1/send", params, headers)
+		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'type':self.mtype, 'to':to, 'from':sender, 'text':text})
+		if self.mtype == 'mms':
+			headers = {"Content-type": "multipart/form-data", "Accept": "text/plain"}
+		else:
+			headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+			conn.request("POST", "/1/send", params, headers)
 		response = conn.getresponse()
 		print response.status, response.reason
 		data = response.read()
