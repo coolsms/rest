@@ -16,10 +16,12 @@ class rest:
 	def __init__(self):
 		self.api_key = None
 		self.api_secret = None
+		self.user_id = None
 
-	def __init__(self, api_key, api_secret):
+	def __init__(self, api_key, api_secret, user_id):
 		self.api_key = api_key
 		self.api_secret = api_secret
+		self.user_id = user_id
 
 	def md5(self, str):
 		if sys.version_info[1] < 6:
@@ -37,7 +39,8 @@ class rest:
 		#sender = "01048597580"
 		#text = "Hello CoolSMS"
 		salt = "1234"
-		signature = hmac.new(self.api_secret, salt, md5)
+		data = salt + self.user_id
+		signature = hmac.new(self.api_secret, data, md5)
 
 		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
 		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'to':to, 'from':sender, 'text':text, 'datetime':'20131212160000'})
@@ -53,7 +56,8 @@ class rest:
 		if mid == None and gid == None:
 			return
 		salt = "1234"
-		signature = hmac.new(self.api_secret, salt, md5)
+		data = salt + self.user_id
+		signature = hmac.new(self.api_secret, data, md5)
 
 		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
 		if mid:
@@ -70,7 +74,8 @@ class rest:
 
 	def balance(self):
 		salt = "1234"
-		signature = hmac.new(self.api_secret, salt, md5)
+		data = salt + self.user_id
+		signature = hmac.new(self.api_secret, data, md5)
 
 		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
 		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest()})
@@ -84,7 +89,8 @@ class rest:
 
 	def set_report_url(self):
 		salt = "1234"
-		signature = hmac.new(self.api_secret, salt, md5)
+		data = salt + self.user_id
+		signature = hmac.new(self.api_secret, data, md5)
 
 		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
 		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'url':'http://nurigo.net'})
@@ -98,7 +104,8 @@ class rest:
 
 	def get_report_url(self):
 		salt = "1234"
-		signature = hmac.new(self.api_secret, salt, md5)
+		data = salt + self.user_id
+		signature = hmac.new(self.api_secret, data, md5)
 
 		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
 		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest()})
@@ -115,7 +122,8 @@ class rest:
 				return
 
 		salt = "1234"
-		signature = hmac.new(self.api_secret, salt, md5)
+		data = salt + self.user_id
+		signature = hmac.new(self.api_secret, data, md5)
 
 		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
 		if mid:
@@ -130,12 +138,13 @@ class rest:
 		print data
 		conn.close()
 def main():
+	user_id = "test"
 	api_key = "NCS52A57F48C3D32"
 	api_secret = "5AC44E03CE8E7212D9D1AD9091FA9966"
 	mid = "M52A95079DE2B0";
 	gid = "G52A95079DDA04";
 
-	r = rest(api_key, api_secret)
+	r = rest(api_key, api_secret, user_id)
 	#r.send()
 	r.status(gid=gid)
 	#r.balance()

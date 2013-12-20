@@ -7,13 +7,14 @@ def load(evt):
 def send_message(evt):
 	api_key = "NCS52A57F48C3D32"
 	api_secret = "5AC44E03CE8E7212D9D1AD9091FA9966"
+	user_id = "test"
 
 	to = mywin['to'].value
 	sender = mywin['from'].value
 	message = mywin['message'].value.encode('utf-8')
 	#print message
 	#message = "TEST"
-	r = coolsms.rest(api_key, api_secret)
+	r = coolsms.rest(api_key, api_secret, user_id)
 	r.send(to,sender,message)
 	#r.status(gid=gid)
 	#r.balance()
