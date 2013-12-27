@@ -160,6 +160,7 @@ class rest:
 		data = response.read()
 		print data
 		conn.close()
+		return json.loads(data)
 
 	def set_report_url(self):
 		salt = "1234"

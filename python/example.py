@@ -13,7 +13,14 @@ class smsui:
 	mtype = 'sms'
 	imgfile = None
 
+	def __get_balance__(self):
+		api_key, api_secret, user_id = self.get_credential()
+		r = coolsms.rest(api_key, api_secret, user_id)
+		return r.balance()
+
 	def load(self, evt):
+		balance = self.__get_balance__()
+		mywin['statusbar'].text = 'cash : ' + balance['cash'] + ', point : ' + balance['point']
 		return
 
 	def get_credential(self):
@@ -82,6 +89,9 @@ class smsui:
 			print status
 			item['col_status'] = status['result_code']
 
+	def get_balance(self, evt):
+		balance = self.__get_balance__()
+		gui.alert('cash : ' + balance['cash'] + ', point : ' + balance['point'])
 
 ui = smsui()
 
@@ -113,6 +123,9 @@ gui.TextBox(name='api_key', left='80', top='50', width='150', parent='mywin.note
 # api_secret
 gui.Label(name='label_secret', left='10', top='84', parent='mywin.notebook.tab_setup', text='API Secret')
 gui.TextBox(name='api_secret', left='80', top='84', width='280', parent='mywin.notebook.tab_setup', value='5AC44E03CE8E7212D9D1AD9091FA9966')
+
+# balance info.
+gui.Button(label='Balanece', name='balance', left='80', top='128', width='85', default=True, parent='mywin.notebook.tab_setup', onclick=ui.get_balance)
 
 #### message #####
 # type
@@ -156,7 +169,7 @@ gui.ListColumn(name='col_status', text='Status', parent='listview', )
 
 mywin = gui.get("mywin")
 
-#mywin.onload = load
+mywin.onload = ui.load
 mywin['notebook']['tab_message']['send'].onclick = ui.send_message
 mywin['menubar']['menu']['menu_quit'].onclick = ui.close_window
 
