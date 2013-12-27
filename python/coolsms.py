@@ -4,7 +4,7 @@
  http://www.coolsms.co.kr
 """
 
-__version__ = "2.3"
+__version__ = "1.0beta"
 
 from hashlib import md5
 import httplib,urllib,sys,hmac,mimetypes,base64,array,uuid,json

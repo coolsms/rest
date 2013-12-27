@@ -1,4 +1,12 @@
-import gui,Tkinter,tkFileDialog,time
+# -*- coding: utf8 -*-
+"""
+ Copyright (C) 2008-2013 NURIGO
+ http://www.coolsms.co.kr
+"""
+
+__version__ = "1.0beta"
+
+import gui
 import coolsms
 
 class smsui:
