@@ -46,6 +46,8 @@ def get_content_type(filename):
 
 
 class rest:
+	host = 'apitest.coolsms.co.kr'
+	port = 2000
 	api_key = None
 	api_secret = None
 	uesr_id = None
@@ -61,6 +63,11 @@ class rest:
 		self.api_key = api_key
 		self.api_secret = api_secret
 		self.user_id = user_id
+
+	def __get_signature__(self):
+		salt = str(uuid.uuid1())
+		data = salt + self.user_id
+		return salt, data, hmac.new(self.api_secret, data, md5)
 
 	def md5(self, str):
 		if sys.version_info[1] < 6:
@@ -87,14 +94,9 @@ class rest:
 		if type(to) == list:
 			to = ','.join(to)
 
-		salt = str(uuid.uuid1())
-		print 'salt : ' + salt
-		data = salt + self.user_id
-		print 'api secret : ' + self.api_secret
-		print 'data : ' + data
-		signature = hmac.new(self.api_secret, data, md5)
+		salt, data, signature = self.__get_signature__()
 
-		host = "apitest.coolsms.co.kr:2000"
+		host = self.host + ':' + str(self.port)
 		selector = "/1/send"
 		fields = {'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'type':self.mtype, 'to':to, 'text':text}
 		if sender:
@@ -110,29 +112,14 @@ class rest:
 
 		status, reason, response = post_multipart(host, selector, fields, files)
 		return json.loads(response)
-		#return response
-
-		#conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
-		#params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'type':self.mtype, 'to':to, 'from':sender, 'text':text})
-		#if self.mtype == 'mms':
-		#	headers = {"Content-type": "multipart/form-data", "Accept": "text/plain"}
-		#else:
-		#	headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		#	conn.request("POST", "/1/send", params, headers)
-		#response = conn.getresponse()
-		#print response.status, response.reason
-		#data = response.read()
-		#print data
-		#conn.close()
 
 	def status(self, mid = None, gid = None):
 		if mid == None and gid == None:
 			return
-		salt = "1234"
-		data = salt + self.user_id
-		signature = hmac.new(self.api_secret, data, md5)
 
-		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
+		salt, data, signature = self.__get_signature__()
+
+		conn = httplib.HTTPConnection(self.host, self.port)
 		if mid:
 			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
 		if gid:
@@ -147,11 +134,9 @@ class rest:
 		return json.loads(data)
 
 	def balance(self):
-		salt = "1234"
-		data = salt + self.user_id
-		signature = hmac.new(self.api_secret, data, md5)
+		salt, data, signature = self.__get_signature__()
 
-		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
+		conn = httplib.HTTPConnection(self.host, self.port)
 		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest()})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 		conn.request("GET", "/1/balance?" + params, None, headers)
@@ -162,45 +147,13 @@ class rest:
 		conn.close()
 		return json.loads(data)
 
-	def set_report_url(self):
-		salt = "1234"
-		data = salt + self.user_id
-		signature = hmac.new(self.api_secret, data, md5)
-
-		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
-		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'url':'http://nurigo.net'})
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("POST", "/1/report_url", params, headers)
-		response = conn.getresponse()
-		print response.status, response.reason
-		data = response.read()
-		print data
-		conn.close()
-
-	def get_report_url(self):
-		salt = "1234"
-		data = salt + self.user_id
-		signature = hmac.new(self.api_secret, data, md5)
-
-		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
-		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest()})
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("GET", "/1/report_url?" + params, None, headers)
-		response = conn.getresponse()
-		print response.status, response.reason
-		data = response.read()
-		print data
-		conn.close()
-
 	def cancel(self, mid = None, gid = None):
 		if mid == None and gid == None:
 				return
 
-		salt = "1234"
-		data = salt + self.user_id
-		signature = hmac.new(self.api_secret, data, md5)
+		salt, data, signature = self.__get_signature__()
 
-		conn = httplib.HTTPConnection("apitest.coolsms.co.kr", 2000)
+		conn = httplib.HTTPConnection(self.host, self.port)
 		if mid:
 			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
 		if gid:
@@ -212,6 +165,7 @@ class rest:
 		data = response.read()
 		print data
 		conn.close()
+
 def main():
 	user_id = "test"
 	api_key = "NCS52A57F48C3D32"
