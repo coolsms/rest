@@ -14,8 +14,8 @@ class smsui:
 	imgfile = None
 
 	def __get_balance__(self):
-		api_key, api_secret, user_id = self.get_credential()
-		r = coolsms.rest(api_key, api_secret, user_id)
+		api_key, api_secret = self.get_credential()
+		r = coolsms.rest(api_key, api_secret)
 		return r.balance()
 
 	def load(self, evt):
@@ -26,21 +26,19 @@ class smsui:
 	def get_credential(self):
 		api_key = str(mywin['notebook']['tab_setup']['api_key'].value)
 		api_secret = str(mywin['notebook']['tab_setup']['api_secret'].value)
-		user_id = str(mywin['notebook']['tab_setup']['user_id'].value)
-		return api_key, api_secret, user_id
+		return api_key, api_secret
 
 	def send_message(self, evt):
-		api_key, api_secret, user_id = self.get_credential()
+		api_key, api_secret = self.get_credential()
 
 		to = mywin['notebook']['tab_message']['to'].value
 		sender = mywin['notebook']['tab_message']['from'].value
 		message = mywin['notebook']['tab_message']['message'].value.encode('utf-8')
 		#print message
 		#message = "TEST"
-		r = coolsms.rest(api_key, api_secret, user_id)
+		r = coolsms.rest(api_key, api_secret)
 		print 'api key : ' + api_key
 		print 'api secret : ' + api_secret
-		print 'user id : ' + user_id
 		print 'to : ' + to
 		print 'sender : ' + sender
 		print 'message : ' + message
@@ -51,7 +49,7 @@ class smsui:
 		print status['result_message']
 		mywin['notebook']['tab_list']['listview'].items[status['message_id']] = {
 			'col_mid':status['message_id']
-			,'col_callno':status['called_number']
+			,'col_callno':status['recipient_number']
 			,'col_status':status['result_code'] + status['result_message']
 		}
 		mywin['statusbar'].text = status['result_message'].encode('utf-8')
@@ -80,8 +78,8 @@ class smsui:
 		mywin['filename'].value = self.imgfile
 
 	def refresh_status(self, evt):
-		api_key, api_secret, user_id = self.get_credential()
-		r = coolsms.rest(api_key, api_secret, user_id)
+		api_key, api_secret = self.get_credential()
+		r = coolsms.rest(api_key, api_secret)
 		for item in mywin['notebook']['tab_list']['listview'].items:
 			print item
 			print item['col_mid']
@@ -113,8 +111,8 @@ gui.TabPanel(name='tab_list', parent='mywin.notebook', selected=True, text='List
 
 #### setup #####
 # user_id
-gui.Label(name='label_userid', left='10', top='22', parent='mywin.notebook.tab_setup', text='User Id')
-gui.TextBox(name='user_id', left='80', top='22', width='150', parent='mywin.notebook.tab_setup', value='test')
+#gui.Label(name='label_userid', left='10', top='22', parent='mywin.notebook.tab_setup', text='User Id')
+#gui.TextBox(name='user_id', left='80', top='22', width='150', parent='mywin.notebook.tab_setup', value='test')
 
 # api_key
 gui.Label(name='label_api_key', left='10', top='50', parent='mywin.notebook.tab_setup', text='API Key')
@@ -160,7 +158,7 @@ gui.StatusBar(name='statusbar', parent='mywin')
 
 #### list ####
 gui.Button(label='Refresh', name='refresh', left='290', top='5', width='85', default=True, parent='mywin.notebook.tab_list', onclick=ui.refresh_status)
-gui.ListView(name='listview', height='99', left='0', top='30', width='396', 
+gui.ListView(name='listview', height='320', left='0', top='30', width='380', 
              item_count=27, parent='mywin.notebook.tab_list', sort_column=0, 
              onitemselected="print ('sel %s' % event.target.get_selected_items())", )
 gui.ListColumn(name='col_mid', text='Message ID', parent='listview', )

@@ -7,7 +7,7 @@
 __version__ = "1.0beta"
 
 from hashlib import md5
-import httplib,urllib,sys,hmac,mimetypes,base64,array,uuid,json
+import httplib,urllib,sys,hmac,mimetypes,base64,array,uuid,json,time
 
 def post_multipart(host, selector, fields, files):
 	content_type, body = encode_multipart_formdata(fields, files)
@@ -57,17 +57,16 @@ class rest:
 	def __init__(self):
 		self.api_key = None
 		self.api_secret = None
-		self.user_id = None
 
-	def __init__(self, api_key, api_secret, user_id):
+	def __init__(self, api_key, api_secret):
 		self.api_key = api_key
 		self.api_secret = api_secret
-		self.user_id = user_id
 
 	def __get_signature__(self):
 		salt = str(uuid.uuid1())
-		data = salt + self.user_id
-		return salt, data, hmac.new(self.api_secret, data, md5)
+		timestamp = str(int(time.time()))
+		data = timestamp + salt
+		return timestamp, salt, hmac.new(self.api_secret, data, md5)
 
 	def md5(self, str):
 		if sys.version_info[1] < 6:
@@ -94,11 +93,11 @@ class rest:
 		if type(to) == list:
 			to = ','.join(to)
 
-		salt, data, signature = self.__get_signature__()
+		timestamp, salt, signature = self.__get_signature__()
 
 		host = self.host + ':' + str(self.port)
 		selector = "/1/send"
-		fields = {'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'type':self.mtype, 'to':to, 'text':text}
+		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':self.mtype, 'to':to, 'text':text}
 		if sender:
 			fields['from'] = sender
 		if subject:
@@ -117,11 +116,11 @@ class rest:
 		if mid == None and gid == None:
 			return
 
-		salt, data, signature = self.__get_signature__()
+		timestamp, salt, signature = self.__get_signature__()
 
 		conn = httplib.HTTPConnection(self.host, self.port)
 		if mid:
-			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
+			params = urllib.urlencode({'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
 		if gid:
 			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'gid':gid})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
@@ -134,10 +133,10 @@ class rest:
 		return json.loads(data)
 
 	def balance(self):
-		salt, data, signature = self.__get_signature__()
+		timestamp, salt, signature = self.__get_signature__()
 
 		conn = httplib.HTTPConnection(self.host, self.port)
-		params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest()})
+		params = urllib.urlencode({'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 		conn.request("GET", "/1/balance?" + params, None, headers)
 		response = conn.getresponse()
@@ -151,11 +150,11 @@ class rest:
 		if mid == None and gid == None:
 				return
 
-		salt, data, signature = self.__get_signature__()
+		timestamp, salt, signature = self.__get_signature__()
 
 		conn = httplib.HTTPConnection(self.host, self.port)
 		if mid:
-			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
+			params = urllib.urlencode({'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
 		if gid:
 			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'gid':gid})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
