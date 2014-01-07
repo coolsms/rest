@@ -2,9 +2,9 @@
 <?php
 $api_key = 'NCS52A57F48C3D32';
 $api_secret = '5AC44E03CE8E7212D9D1AD9091FA9966';
+$timestamp = time();
 $salt = uniqid();
-$user_id = 'test';
-$data = $salt . $user_id;
+$data = strval($timestamp) . $salt;
 $signature = hash_hmac('md5', $data, $api_secret);
 ?>
 <html lang="ko" xml:lang="ko" xmlns="http://www.w3.org/1999/xhtml">
@@ -14,6 +14,7 @@ $signature = hash_hmac('md5', $data, $api_secret);
 	<body>
 		<form method="post" action="http://apitest.coolsms.co.kr:2000/1/send" enctype="multipart/form-data">
 			API Key: <input type="text" name="api_key" value="<?php echo $api_key ?>" /><br />
+			Timestame: <input type="text" name="timestamp" value="<?php echo $timestamp ?>" /><br />
 			Salt: <input type="text" name="salt" value="<?php echo $salt ?>" /><br />
 			Signature: <input type="text" name="signature" value="<?php echo $signature ?>" /><br />
 			To: <input type="text" name="to" value="01000000000" /><br />
