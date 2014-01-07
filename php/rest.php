@@ -2,36 +2,34 @@
 
 class rest
 {
-	private $method; // POST or GET
+	private $method; 		// POST or GET
 	private $host = "apitest.coolsms.co.kr"; // ip address or domain
-	private $port = 2000; // port number
-	private $path; // target  webapplication ( or  CGI)
+	private $port = 2000; 	// port number
+	private $path; 			// target  webapplication ( or  CGI)
 	private $version = 1;
 	private $errno;
 	private $errstr;
 	private $timeout;
 
-	private $fp; // file pointer of connected socket
-	private $userid;  // coolsms site id
-	private $api_key;  // api_key from www.coolsms.co.kr/credentials 
-	private $api_secret; //api_secret from www.coolsms.co.kr/credentials
-	private $content;
-	private $salt;
+	private $fp; 			// file pointer of connected socket
+	private $timestamp;
+	private $api_key;  		// api_key from www.coolsms.co.kr/credentials 
+	private $api_secret; 	// api_secret from www.coolsms.co.kr/credentials
+	private $content;		// content that add to GET method header
+	private $salt;			// salt for authentication purpose
 	
-	private $boundary;
-	private $options;
-	private $boundaryData;
+	private $boundary;		// boundary name for multipart
+	private $options;		
+	private $boundaryData;	
 
-	public $result; // Response string 
-	public $resultHeader; // Response string only HTTP Header (without HTTP body)
-	public $resultBody; // Response string only HTTP Body (without HTTP header)
+	public $resultHeader; 	// Response string only HTTP Header (without HTTP body)
+	public $resultBody; 	// Response string only HTTP Body (without HTTP header)
 	  
 	
 // constructor
-function __construct($userid, $api_key, $api_secret, $errno=null,$errstr=null,$timeout=10)
+public function __construct($api_key, $api_secret, $errno=null,$errstr=null,$timeout=10)
 {
 	$this->boundary = md5(uniqid(time()));
-	$this->userid = $userid;
 	$this->api_key = $api_key;
 	$this->api_secret = $api_secret;
 	$this->errno =$errno;
@@ -39,26 +37,25 @@ function __construct($userid, $api_key, $api_secret, $errno=null,$errstr=null,$t
 	$this->timeout =$timeout;
 }
 
-function openSocket() 
+private function openSocket() 
 {
 	$this->fp = fsockopen($this->host,$this->port,$this->errno,$this->errstr,$this->timeout);
 }
   
-function closeSocket() 
+private function closeSocket() 
 {
 	fclose($this->fp);
 }
   
 // put header to connected socket 
-function putHeader() 
+private function putHeader() 
 {
-	// if request method is GET, content attached at the end of URL
+	// if request method is GET, content will be attached at the end of URL
 	$getQuery = $this->method == strtoupper("GET") ? "?".$this->content : "";
 	fputs($this->fp, $this->method." ".$this->getPath().$getQuery." HTTP/1.1\r\n"); 
 	fputs($this->fp, "Host: ".$this->host."\r\n"); 
 	
 	//fputs($this->fp, "Content-type: application/x-www-form-urlencoded\r\n");
-	
 	fputs($this->fp, "Content-type: multipart/form-data; boundary=\"$this->boundary\"\r\n");
 
 	if($this->method == strtoupper("POST"))
@@ -69,14 +66,12 @@ function putHeader()
 	fputs($this->fp, "Connection: close\r\n\r\n"); 
 }
 
-function setBoundaryData()
+private function setBoundaryData()
 {
 	$options = $this->options;
 	foreach($options as $key => $val){
 		if($key == 'image')
-		{
 			$data .= $this->setBoundaryImgData($data);
-		}
 		else
 		{
 			$data .= "--$this->boundary\n";
@@ -87,7 +82,7 @@ function setBoundaryData()
 	$this->boundaryData = $data;
 }
 
-function setBoundaryImgData($data)
+private function setBoundaryImgData($data)
 {
 	if(file_exists($this->options->image))
 	{
@@ -101,94 +96,128 @@ function setBoundaryImgData($data)
 	return $data;
 }
 
-// Gets responsed value(by line) from connected socket
-function getResponse() {
-   while(!feof($this->fp)) 
-   { 
+/**
+ * 	@get responded value(by line) from connected socket
+ * 	@partitioning Header,Body 
+ */
+private function setResult() 
+{
+    while(!feof($this->fp)) 
+    {  
 	$result .= fgets($this->fp, 1024); 
-   }
-   $this->result = $result;
+    }
+    $tmp = explode("\r\n\r\n",$result); 
+	$this->resultHeader = json_decode($tmp[0]);
+	$this->resultBody = json_decode($tmp[1]);
+}
+
+private function getResult() 
+{
+	return $this->resultBody; 
 }
   
-function getPath()
+private function getPath()
 {
 	return "/".$this->version."/".$this->path;
 }	
 
-function doSocketProc()
+private function doSocketProc()
 {
 	$this->openSocket();
 	$this->putHeader();
-	$this->getResponse();
-	$this->getResult();
-	//$this->setResult();
+	$this->setResult();
 	$this->closeSocket();
 }
 
-function send($options) 
+private function setMethod($path, $method)
 {
-	$this->addInfos($options);	
-	$this->setBoundaryData();
-	$this->path = 'send';
-	$this->method = 'POST';
-	$this->doSocketProc();
+	$this->path = $path;
+	$this->method = $method;
 }
 
-function sent($options)
-{
-	$this->addInfos($options);
-	$this->setContent($this->options);
-	$this->path = 'sent';
-	$this->method = 'GET';
-	$this->doSocketProc();
-}
-
-function cancel($options)
-{
-	$this->addInfos($options);
-	$this->setBoundaryData();
-	$this->path = 'cancel';
-	$this->method = 'POST';
-	$this->setContent($options);
-	$this->doSocketProc();
-}
-
-function balance()
-{
-	$options = new stdClass();
-	$this->addInfos($options);
-	$this->setContent($options);
-	$this->path = 'balance';
-	$this->method = 'GET';
-	$this->doSocketProc();
-}
-
-function addInfos($options)
+private function addInfos($options)
 {
 	$this->salt = uniqid();
+	$this->timestamp = (string)time();
+	$options->timestamp = $this->timestamp;
 	$options->api_key = $this->api_key;
 	$options->salt = $this->salt;
 	$options->signature = $this->getSignature();
+	//print_r($options);
 	$this->options = $options;
 }
 
-function setContent($options)
+private function setContent($options)
 {
 	foreach($options as $key => $val)
 		$this->content .= $key."=".$val."&";
 }
 
-function getSignature()
+private function getSignature()
 {
-	return hash_hmac('md5', $this->salt.$this->userid, $this->api_secret);
+	
+	return hash_hmac('md5', (string)$this->timestamp.$this->salt, $this->api_secret);
 }
 
-// partitioning Header,Body 
-function getResult() {
-	$tmp = explode("\r\n\r\n",$this->result); // Split a string by (CRLF *2)  
-	$this->resultHeader = $tmp[0];
-	$this->resultBody = $tmp[1];
-	return json_decode($this->resultBody);
+/**
+ *  @POST send method
+ *	@options must contain api_key, salt, signature, to, from, text
+ *	@type, image, refname, country, datetime, mid, gid, subject, charset (optional)
+ *	@returns an object(recipient_number, group_id, message_id, result_code, result_message)
+ */
+public function send($options) 
+{
+	$this->addInfos($options);	
+	$this->setBoundaryData();
+	$this->setMethod('send', 'POST');
+	$this->doSocketProc();
+	return $this->getResult();
+}
+
+/**
+ * 	@GET sent method
+ * 	@options must contain api_key, salt, signature
+ * 	@mid, gid (optional)
+ * 	@returns an object(recipient_number, group_id, message_id, status, result_code, result_message)
+ */
+public function sent($options)
+{
+	$this->addInfos($options);
+	$this->setContent($this->options);
+	$this->setMethod('sent', 'GET');
+	$this->doSocketProc();
+	return $this->getResult();
+}
+
+/**
+ * 	@POST cancel method
+ * 	@options must contain api_key, salt, signature
+ * 	@mid, gid (either one must be entered.)
+ */
+public function cancel($options)
+{
+	$this->addInfos($options);
+	$this->setBoundaryData();
+	$this->setMethod('cancel', 'POST');
+	$this->setContent($options);
+	$this->doSocketProc();
+	return $this->getResult();
+	//return nothing
+}
+
+/**
+ * 	@GET balance method
+ * 	@options must contain api_key, salt, signature
+ * 	@return an object(cash, point)
+ */
+public function balance()
+{
+	$options = new stdClass();
+	$this->addInfos($options);
+	$this->setContent($options);
+	$this->setMethod('balance', 'GET');
+	$this->doSocketProc();
+	return $this->getResult();
 }
 
 }
