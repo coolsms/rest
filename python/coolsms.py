@@ -21,7 +21,7 @@ def post_multipart(host, selector, fields, files):
 	return errcode, errmsg, h.file.read()
 
 def encode_multipart_formdata(fields, files):
-	BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+	BOUNDARY = str(uuid.uuid1())
 	CRLF = '\r\n'
 	L = []
 	for key, value in fields.items():
@@ -50,6 +50,7 @@ class rest:
 	port = 2000
 	api_key = None
 	api_secret = None
+	srk = None
 	uesr_id = None
 	mtype = None
 	imgfile = None
@@ -58,9 +59,10 @@ class rest:
 		self.api_key = None
 		self.api_secret = None
 
-	def __init__(self, api_key, api_secret):
+	def __init__(self, api_key, api_secret, srk = None):
 		self.api_key = api_key
 		self.api_secret = api_secret
+		self.srk = srk
 
 	def __get_signature__(self):
 		salt = str(uuid.uuid1())
@@ -98,6 +100,8 @@ class rest:
 		host = self.host + ':' + str(self.port)
 		selector = "/1/send"
 		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':self.mtype, 'to':to, 'text':text}
+		if self.srk != None:
+			fields['srk'] = self.srk
 		if sender:
 			fields['from'] = sender
 		if subject:
@@ -112,19 +116,20 @@ class rest:
 		status, reason, response = post_multipart(host, selector, fields, files)
 		return json.loads(response)
 
-	def status(self, mid = None, gid = None):
-		if mid == None and gid == None:
-			return
-
+	def status(self, page = 1, mid = None, gid = None):
 		timestamp, salt, signature = self.__get_signature__()
 
 		conn = httplib.HTTPConnection(self.host, self.port)
+		params = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()}
+		if page:
+			params['page'] = page
 		if mid:
-			params = urllib.urlencode({'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
+			params['mid'] = mid
 		if gid:
-			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'gid':gid})
+			params['gid'] = gid
+		params_str = urllib.urlencode(params)
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("GET", "/1/sent?" + params, None, headers)
+		conn.request("GET", "/1/sent?" + params_str, None, headers)
 		response = conn.getresponse()
 		print response.status, response.reason
 		data = response.read()
