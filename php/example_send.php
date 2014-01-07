@@ -1,18 +1,28 @@
 <?php
+/* #example_send
+ *
+ **  This sample code demonstrate how you can send sms through CoolSMS Rest API PHP v1.0
+ **  for more info, visit
+ **  www.coolsms.co.kr
+ *
+ */
 
 include_once "rest.php";
 
+
 /*
- ** api_key and api_secret can be obtained from www.coolsms.co.kr/credentials
+ **  api_key and api_secret can be obtained from www.coolsms.co.kr/credentials
  */
 $apikey = 'NCS52A57F48C3D32';
 $apisecret = '5AC44E03CE8E7212D9D1AD9091FA9966';
 
+
 //initiate rest api sdk object
 $rest = new rest($apikey, $apisecret);
 
+
 /*
- ** 5 options(timestamp, to, from, type, text) are mandatory. must be filled
+ **  5 options(timestamp, to, from, type, text) are mandatory. must be filled
  */
 $options->timestamp = (string)time();
 $options->to = '01021725487';
