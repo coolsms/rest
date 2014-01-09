@@ -75,6 +75,9 @@ class rest:
 	def __set_error__(self, error_str):
 		self.error_string = error_str
 
+	def get_type(self):
+		return self.mtype
+
 	def get_error(self):
 		return self.error_string
 
