@@ -6,7 +6,7 @@
 
 __version__ = "1.0beta"
 
-import gui
+import gui,math
 import coolsms
 
 class smsui:
@@ -35,9 +35,7 @@ class smsui:
 
 		to = mywin['notebook']['tab_message']['to'].value
 		sender = mywin['notebook']['tab_message']['from'].value
-		message = mywin['notebook']['tab_message']['message'].value.encode('utf-8')
-		#print message
-		#message = "TEST"
+		message = mywin['notebook']['tab_message']['message'].value
 		r = coolsms.rest(api_key, api_secret, 'K0000242263')
 		print 'api key : ' + api_key
 		print 'api secret : ' + api_secret
@@ -47,13 +45,13 @@ class smsui:
 		r.set_type(self.mtype)
 		if self.mtype == 'mms':
 			r.set_image(self.imgfile)
-		status = r.send(to,sender,message)
+		status = r.send(to, message, sender)
 		print status['result_message']
-		mywin['notebook']['tab_list']['listview'].items[status['message_id']] = {
-			'col_mid':status['message_id']
-			,'col_callno':status['recipient_number']
-			,'col_status':status['result_code'] + status['result_message']
-		}
+		#mywin['notebook']['tab_list']['listview'].items[status['message_id']] = {
+		#	'col_mid':status['message_id']
+		#	,'col_callno':status['recipient_number']
+		#	,'col_status':status['result_code'] + status['result_message']
+		#}
 		mywin['statusbar'].text = status['result_message'].encode('utf-8')
 		#r.status(gid=gid)
 		#r.balance()
@@ -99,7 +97,7 @@ class smsui:
 		total_count = status['total_count']
 		list_count = status['list_count']
 		page = int(status['page'])
-		self.total_page = int(int(total_count) / int(list_count))
+		self.total_page = math.ceil(int(total_count) / int(list_count) + 1)
 
 		mywin['notebook']['tab_list']['label_page'].text = 'Page : %u/%u' % (page, self.total_page)
 		mywin['notebook']['tab_list']['listview'].items = []
@@ -181,7 +179,7 @@ gui.TextBox(name='subject', left='80', top='116', width='150', parent='mywin.not
 
 # message
 gui.Label(name='label_message', left='10', top='142', parent='mywin.notebook.tab_message', text='Message')
-gui.TextBox(name='message', left='80', top='142', width='150', height='150', parent='mywin.notebook.tab_message', value='message\nhere', multiline=True)
+gui.TextBox(name='message', left='80', top='142', width='150', height='150', parent='mywin.notebook.tab_message', value=u'메시지를 입력하세요', multiline=True)
 
 gui.Label(name='label_image', left='10', top='306', parent='mywin.notebook.tab_message', text='Image')
 gui.Button(label='File', name='choose_image', left='80', top='300', width='85', default=True, parent='mywin.notebook.tab_message', onclick=ui.choose_image)

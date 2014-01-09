@@ -29,15 +29,16 @@ def encode_multipart_formdata(fields, files):
 		L.append('Content-Disposition: form-data; name="%s"' % key)
 		L.append('')
 		L.append(value)
-	body = CRLF.join(L)
-	body = body + CRLF
+	L.append('')
 	for key, value in files.items():
-		body = body + '--' + BOUNDARY + CRLF
-		body = body + 'Content-Type: %s' % get_content_type(value['filename']) + CRLF
-		body = body + 'Content-Disposition: form-data; name="%s"; filename="%s"' % (key, value['filename']) + CRLF
-		body = body + CRLF
-		body = body.encode('utf-8') + value['content'] + CRLF
-	body = body + '--' + BOUNDARY + '--' + CRLF + CRLF
+		L.append('--' + BOUNDARY)
+		L.append('Content-Type: %s' % get_content_type(value['filename']))
+		L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, value['filename']))
+		L.append('')
+		L.append(value['content'])
+	L.append('--' + BOUNDARY + '--')
+	L.append('')
+	body = CRLF.join(L)
 	content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
 	return content_type, body
 
@@ -52,8 +53,9 @@ class rest:
 	api_secret = None
 	srk = None
 	uesr_id = None
-	mtype = None
+	mtype = 'sms'
 	imgfile = None
+	error_string = None
 
 	def __init__(self):
 		self.api_key = None
@@ -70,53 +72,75 @@ class rest:
 		data = timestamp + salt
 		return timestamp, salt, hmac.new(self.api_secret, data, md5)
 
-	def md5(self, str):
-		if sys.version_info[1] < 6:
-			#- ptyon version 2.6.X under
-			hash = md5.new()
-		else:
-			#- ptyon version 2.6.X upper
-			hash = hashlib.md5()
-		hash.update(str)
-		return string.join(map(lambda v: "%02x" % ord(v), hash.digest()), "")
+	def __set_error__(self, error_str):
+		self.error_string = error_str
+
+	def get_error(self):
+		return self.error_string
 
 	def set_type(self, mtype):
+		if mtype.lower() not in ['sms','lms','mms']:
+			return False
 		self.mtype = mtype.lower()
+		return True
 
 	def set_image(self, image):
 		self.imgfile = image
 
-	def send(self,to='',sender='',text='',subject=''):
+	def send(self, to, text, sender='', mtype=None, subject='', image=None):
 		if to == '':
-			return 'No phone number input'
+			self.__set_error__('to parameter input required')
+			return False
 		if text == '':
-			return 'No message input'
+			self.__set_error__('text parameter input required')
+			return False
 
 		if type(to) == list:
 			to = ','.join(to)
+
+		if mtype:
+			if mtype.lower() not in ['sms','lms','mms']:
+				self.__set_error__('invalid message type')
+				return False
+		else:
+			mtype = self.get_type()
 
 		timestamp, salt, signature = self.__get_signature__()
 
 		host = self.host + ':' + str(self.port)
 		selector = "/1/send"
-		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':self.mtype, 'to':to, 'text':text}
+		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':mtype, 'to':to, 'text':text}
 		if self.srk != None:
 			fields['srk'] = self.srk
 		if sender:
 			fields['from'] = sender
 		if subject:
 			fields['subject'] = subject
-		if self.mtype == 'mms':
-			with open(self.imgfile, 'rb') as content_file:
-				content = content_file.read()
-			files = {'image':{'filename':self.imgfile,'content':content}}
+
+		if image == None:
+			image = self.imgfile
+
+		if mtype.lower() == 'mms':
+			if image == None:
+				self.__set_error__('image file path input required')
+				return False
+			try:
+				with open(image, 'rb') as content_file:
+					content = content_file.read()
+			except IOError as e:
+				self.__set_error__("I/O error({0}): {1}".format(e.errno, e.strerror))
+				return False
+			except:
+				self.__set_error__("Unknown error")
+				return False
+			files = {'image':{'filename':image,'content':content}}
 		else:
 			files = {}
 
 		status, reason, response = post_multipart(host, selector, fields, files)
 		return json.loads(response)
 
-	def status(self, page = 1, mid = None, gid = None):
+	def status(self, page = 1, mid = None, gid = None, s_rcpt = None, s_start = None, s_end = None):
 		timestamp, salt, signature = self.__get_signature__()
 
 		conn = httplib.HTTPConnection(self.host, self.port)
@@ -127,6 +151,12 @@ class rest:
 			params['mid'] = mid
 		if gid:
 			params['gid'] = gid
+		if s_rcpt:
+			params['s_rcpt'] = s_rcpt
+		if s_start:
+			params['s_start'] = s_start
+		if s_end:
+			params['s_end'] = s_end
 		params_str = urllib.urlencode(params)
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 		conn.request("GET", "/1/sent?" + params_str, None, headers)
@@ -153,7 +183,7 @@ class rest:
 
 	def cancel(self, mid = None, gid = None):
 		if mid == None and gid == None:
-				return
+			return False
 
 		timestamp, salt, signature = self.__get_signature__()
 
@@ -169,6 +199,9 @@ class rest:
 		data = response.read()
 		print data
 		conn.close()
+		if response.status == 200:
+			return True
+		return False
 
 def main():
 	user_id = "test"
