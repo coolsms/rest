@@ -47,8 +47,8 @@ def get_content_type(filename):
 
 
 class rest:
-	host = 'apitest.coolsms.co.kr'
-	port = 2000
+	host = 'api.coolsms.co.kr'
+	port = 80
 	api_key = None
 	api_secret = None
 	srk = None
@@ -90,7 +90,7 @@ class rest:
 	def set_image(self, image):
 		self.imgfile = image
 
-	def send(self, to, text, sender='', mtype=None, subject='', image=None):
+	def send(self, to, text, sender='', mtype=None, subject='', image=None, datetime=None):
 		if to == '':
 			self.__set_error__('to parameter input required')
 			return False
@@ -119,6 +119,8 @@ class rest:
 			fields['from'] = sender
 		if subject:
 			fields['subject'] = subject
+		if datetime:
+			fields['datetime'] = datetime
 
 		if image == None:
 			image = self.imgfile
@@ -141,15 +143,22 @@ class rest:
 			files = {}
 
 		status, reason, response = post_multipart(host, selector, fields, files)
+		if status != 200:
+			err = json.loads(response)
+			print err
+			self.__set_error__("%s:%s" % (err['code'], reason))
+			return False
 		return json.loads(response)
 
-	def status(self, page = 1, mid = None, gid = None, s_rcpt = None, s_start = None, s_end = None):
+	def status(self, page = 1, count = 20, mid = None, gid = None, s_rcpt = None, s_start = None, s_end = None):
 		timestamp, salt, signature = self.__get_signature__()
 
 		conn = httplib.HTTPConnection(self.host, self.port)
 		params = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()}
 		if page:
 			params['page'] = page
+		if count:
+			params['count'] = count
 		if mid:
 			params['mid'] = mid
 		if gid:
@@ -164,9 +173,7 @@ class rest:
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 		conn.request("GET", "/1/sent?" + params_str, None, headers)
 		response = conn.getresponse()
-		print response.status, response.reason
 		data = response.read()
-		print data
 		conn.close()
 		return json.loads(data)
 
@@ -178,11 +185,10 @@ class rest:
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 		conn.request("GET", "/1/balance?" + params, None, headers)
 		response = conn.getresponse()
-		print response.status, response.reason
 		data = response.read()
-		print data
 		conn.close()
-		return json.loads(data)
+		obj = json.loads(data)
+		return int(obj['cash']), int(obj['point'])
 
 	def cancel(self, mid = None, gid = None):
 		if mid == None and gid == None:
@@ -198,9 +204,7 @@ class rest:
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 		conn.request("POST", "/1/cancel", params, headers)
 		response = conn.getresponse()
-		print response.status, response.reason
 		data = response.read()
-		print data
 		conn.close()
 		if response.status == 200:
 			return True

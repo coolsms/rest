@@ -21,8 +21,8 @@ class smsui:
 		return r.balance()
 
 	def load(self, evt):
-		balance = self.__get_balance__()
-		mywin['statusbar'].text = 'cash : ' + balance['cash'] + ', point : ' + balance['point']
+		cash, point = self.__get_balance__()
+		mywin['statusbar'].text = "cash : %u, point : %u" % (cash, point)
 		return
 
 	def get_credential(self):
@@ -46,20 +46,18 @@ class smsui:
 		if self.mtype == 'mms':
 			r.set_image(self.imgfile)
 		status = r.send(to, message, sender)
-		print status['result_message']
-		#mywin['notebook']['tab_list']['listview'].items[status['message_id']] = {
-		#	'col_mid':status['message_id']
-		#	,'col_callno':status['recipient_number']
-		#	,'col_status':status['result_code'] + status['result_message']
-		#}
-		mywin['statusbar'].text = status['result_message'].encode('utf-8')
-		#r.status(gid=gid)
-		#r.balance()
-		#r.set_report_url()
-		#r.cancel(gid=gid)
-		#r.get_report_url()
-		gui.alert("Sent!")
+		if status == False:
+			mywin['statusbar'].text = r.get_error()
+			gui.alert(r.get_error())
+			return
 
+		if int(status['error_count']) > 0:
+			gui.alert("%u 개의 메시지에 오류가 발생했습니다." % int(status['error_count']))
+		else:
+			gui.alert("Sent!")
+
+		print status['result_message']
+		mywin['statusbar'].text = status['result_message'].encode('utf-8')
 
 	def close_window(self, evt):
 		exit()
@@ -92,7 +90,7 @@ class smsui:
 	def refresh_status(self, evt):
 		api_key, api_secret = self.get_credential()
 		r = coolsms.rest(api_key, api_secret)
-		status = r.status(page=self.page)
+		status = r.status(page=self.page, count=29)
 		data = status['data']
 		total_count = status['total_count']
 		list_count = status['list_count']
@@ -121,8 +119,8 @@ class smsui:
 		#	item['col_status'] = status['result_code']
 
 	def get_balance(self, evt):
-		balance = self.__get_balance__()
-		gui.alert('cash : ' + balance['cash'] + ', point : ' + balance['point'])
+		cash, point = self.__get_balance__()
+		gui.alert('cash : %u, point : %u' % (cash, point))
 
 ui = smsui()
 
