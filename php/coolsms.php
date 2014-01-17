@@ -1,10 +1,10 @@
 <?php
 
-class rest
+class coolsms 
 {
 	private $method; 		// POST or GET
-	private $host = "apitest.coolsms.co.kr"; // ip address or domain
-	private $port = 2000; 	// port number
+	private $host = "api.coolsms.co.kr"; // ip address or domain
+	private $port = 80; 	// port number
 	private $path; 			// target  webapplication ( or  CGI)
 	private $version = 1;
 	private $errno;
@@ -56,14 +56,16 @@ private function putHeader()
 	fputs($this->fp, "Host: ".$this->host."\r\n"); 
 	
 	//fputs($this->fp, "Content-type: application/x-www-form-urlencoded\r\n");
-	fputs($this->fp, "Content-type: multipart/form-data; boundary=\"$this->boundary\"\r\n");
+
+	
 
 	if($this->method == strtoupper("POST"))
 	{
-		fputs($this->fp, "Content-length: ".strlen($this->boundaryData)."\n\n"); 
-		fputs($this->fp, $this->boundaryData);
+		fputs($this->fp, "Content-type: multipart/form-data; boundary=\"$this->boundary\"\r\n");
+		fputs($this->fp, "Content-length: ".strlen($this->boundaryData)."\r\n"); 
 	}
 	fputs($this->fp, "Connection: close\r\n\r\n"); 
+	fputs($this->fp, $this->boundaryData);
 }
 
 private function setBoundaryData()
@@ -74,8 +76,8 @@ private function setBoundaryData()
 			$data .= $this->setBoundaryImgData($data);
 		else
 		{
-			$data .= "--$this->boundary\n";
-			$data .= "Content-Disposition: form-data; name=\"".$key . "\"\n\n" . $val . "\n";
+			$data .= "--$this->boundary\r\n";
+			$data .= "Content-Disposition: form-data; name=\"".$key . "\"\r\n\r\n" . $val . "\r\n";
 		}
 	}
 	$data .= "--$this->boundary--\n";
@@ -104,13 +106,26 @@ private function setResult()
 {
     while(!feof($this->fp)) 
     {  
-	$result .= fgets($this->fp, 1024); 
+		$result .= fgets($this->fp, 1024); 
     }
     $tmp = explode("\r\n\r\n",$result); 
 	$this->resultHeader = json_decode($tmp[0]);
 	$this->resultBody = json_decode($tmp[1]);
+	
+	//for chuncked data decode
+	if(!$this->resultBody)
+		$this->resultBody = json_decode($this->decode_chunked($tmp[1]));
 }
 
+function decode_chunked($str) {
+	for ($res = ''; !empty($str); $str = trim($str)) {
+		$pos = strpos($str, "\r\n");
+		$len = hexdec(substr($str, 0, $pos));
+		$res.= substr($str, $pos + 2, $len);
+		$str = substr($str, $pos + 2 + $len);
+	}
+	return $res;
+}
 private function getResult() 
 {
 	return $this->resultBody; 
@@ -150,7 +165,7 @@ private function addInfos($options)
 private function setContent($options)
 {
 	foreach($options as $key => $val)
-		$this->content .= $key."=".$val."&";
+		$this->content .= $key."=".urlencode($val)."&";
 }
 
 private function getSignature()
@@ -158,6 +173,7 @@ private function getSignature()
 	
 	return hash_hmac('md5', (string)$this->timestamp.$this->salt, $this->api_secret);
 }
+
 
 /**
  *  @POST send method
@@ -174,13 +190,14 @@ public function send($options)
 	return $this->getResult();
 }
 
+
 /**
  * 	@GET sent method
  * 	@options must contain api_key, salt, signature
  * 	@mid, gid (optional)
  * 	@returns an object(recipient_number, group_id, message_id, status, result_code, result_message)
  */
-public function sent($options)
+public function sent($options=null)
 {
 	$this->addInfos($options);
 	$this->setContent($this->options);
@@ -188,6 +205,7 @@ public function sent($options)
 	$this->doSocketProc();
 	return $this->getResult();
 }
+
 
 /**
  * 	@POST cancel method
@@ -204,6 +222,7 @@ public function cancel($options)
 	return $this->getResult();
 	//return nothing
 }
+
 
 /**
  * 	@GET balance method
