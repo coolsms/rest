@@ -30,15 +30,22 @@ def encode_multipart_formdata(fields, files):
 		L.append('')
 		L.append(value)
 	L.append('')
-	for key, value in files.items():
-		L.append('--' + BOUNDARY)
-		L.append('Content-Type: %s' % get_content_type(value['filename']))
-		L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, value['filename']))
-		L.append('')
-		L.append(value['content'])
-	L.append('--' + BOUNDARY + '--')
-	L.append('')
 	body = CRLF.join(L)
+	for key, value in files.items():
+		#L.append('--' + BOUNDARY)
+		#L.append('Content-Type: %s' % get_content_type(value['filename']))
+		#L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, value['filename']))
+		#L.append('')
+		#L.append(value['content'])
+		body = body + '--' + BOUNDARY + CRLF
+		body = body + 'Content-Type: %s' % get_content_type(value['filename']) + CRLF
+		body = body + 'Content-Disposition: form-data; name="%s"; filename="%s"' % (key, value['filename']) + CRLF
+		body = body + CRLF
+		body = body.encode('utf-8') + value['content'] + CRLF
+	#L.append('--' + BOUNDARY + '--')
+	#L.append('')
+	body = body + '--' + BOUNDARY + '--' + CRLF
+	body = body + CRLF
 	content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
 	return content_type, body
 
@@ -49,6 +56,7 @@ def get_content_type(filename):
 class rest:
 	host = 'api.coolsms.co.kr'
 	port = 80
+	version = '1'
 	api_key = None
 	api_secret = None
 	srk = None
@@ -111,7 +119,7 @@ class rest:
 		timestamp, salt, signature = self.__get_signature__()
 
 		host = self.host + ':' + str(self.port)
-		selector = "/1/send"
+		selector = "/%s/send" % self.version
 		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':mtype, 'to':to, 'text':text}
 		if self.srk != None:
 			fields['srk'] = self.srk
@@ -143,9 +151,13 @@ class rest:
 			files = {}
 
 		status, reason, response = post_multipart(host, selector, fields, files)
+		print response
 		if status != 200:
-			err = json.loads(response)
-			print err
+			try:
+				err = json.loads(response)
+			except:
+				self.__set_error__("%u:%s" % (status, reason))
+				return False
 			self.__set_error__("%s:%s" % (err['code'], reason))
 			return False
 		return json.loads(response)
@@ -171,7 +183,7 @@ class rest:
 			params['s_end'] = s_end
 		params_str = urllib.urlencode(params)
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("GET", "/1/sent?" + params_str, None, headers)
+		conn.request("GET", "/%s/sent?" % self.version + params_str, None, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()
@@ -183,7 +195,7 @@ class rest:
 		conn = httplib.HTTPConnection(self.host, self.port)
 		params = urllib.urlencode({'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("GET", "/1/balance?" + params, None, headers)
+		conn.request("GET", "/%s/balance?" % self.version + params, None, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()
@@ -202,7 +214,7 @@ class rest:
 		if gid:
 			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'gid':gid})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("POST", "/1/cancel", params, headers)
+		conn.request("POST", "/%s/cancel" % self.version, params, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()

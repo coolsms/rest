@@ -73,7 +73,7 @@ class smsui:
 	def choose_image(self, evt):
 		self.imgfile = gui.open_file("select the file")
 		print self.imgfile
-		mywin['filename'].value = self.imgfile
+		mywin['notebook']['tab_message']['filename'].value = self.imgfile
 
 	def refresh_prev(self, evt):
 		if self.page <= 1:
