@@ -14,10 +14,14 @@ class smsui:
 	imgfile = None
 	page = 1
 	total_page = 1
+	test = False
+
+	def __get_api__(self):
+		api_key, api_secret = self.get_credential()
+		return  coolsms.rest(api_key, api_secret, srk=None, test=self.test, version='1')
 
 	def __get_balance__(self):
-		api_key, api_secret = self.get_credential()
-		r = coolsms.rest(api_key, api_secret)
+		r = self.__get_api__()
 		return r.balance()
 
 	def load(self, evt):
@@ -31,17 +35,10 @@ class smsui:
 		return api_key, api_secret
 
 	def send_message(self, evt):
-		api_key, api_secret = self.get_credential()
-
 		to = mywin['notebook']['tab_message']['to'].value
 		sender = mywin['notebook']['tab_message']['from'].value
 		message = mywin['notebook']['tab_message']['message'].value
-		r = coolsms.rest(api_key, api_secret, 'K0000242263')
-		print 'api key : ' + api_key
-		print 'api secret : ' + api_secret
-		print 'to : ' + to
-		print 'sender : ' + sender
-		print 'message : ' + message
+		r = self.__get_api__()
 		r.set_type(self.mtype)
 		if self.mtype == 'mms':
 			r.set_image(self.imgfile)
@@ -61,6 +58,12 @@ class smsui:
 
 	def close_window(self, evt):
 		exit()
+
+	def test_mode(self, evt):
+		if evt.target.value:
+			self.test = True
+		else:
+			self.test = False
 
 	def choose_type(self, evt):
 		if evt.target.name == 'sms':
@@ -88,8 +91,7 @@ class smsui:
 		self.refresh_status(evt)
 
 	def refresh_status(self, evt):
-		api_key, api_secret = self.get_credential()
-		r = coolsms.rest(api_key, api_secret)
+		r = self.__get_api__()
 		status = r.status(page=self.page, count=29)
 		data = status['data']
 		total_count = status['total_count']
@@ -153,8 +155,11 @@ gui.TextBox(name='api_key', left='80', top='50', width='150', parent='mywin.note
 gui.Label(name='label_secret', left='10', top='84', parent='mywin.notebook.tab_setup', text='API Secret')
 gui.TextBox(name='api_secret', left='80', top='84', width='280', parent='mywin.notebook.tab_setup', value='5AC44E03CE8E7212D9D1AD9091FA9966')
 
+# test mode
+gui.CheckBox(label='Test Mode', name='test_mode', left='80', top='115', parent='mywin.notebook.tab_setup', onclick=ui.test_mode)
+
 # balance info.
-gui.Button(label='Balanece', name='balance', left='80', top='128', width='85', default=True, parent='mywin.notebook.tab_setup', onclick=ui.get_balance)
+gui.Button(label='Balanece', name='balance', left='80', top='138', width='85', default=True, parent='mywin.notebook.tab_setup', onclick=ui.get_balance)
 
 #### message #####
 # type

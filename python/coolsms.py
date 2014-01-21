@@ -64,15 +64,15 @@ class rest:
 	mtype = 'sms'
 	imgfile = None
 	error_string = None
+	test = False
 
-	def __init__(self):
-		self.api_key = None
-		self.api_secret = None
-
-	def __init__(self, api_key, api_secret, srk = None):
+	def __init__(self, api_key, api_secret, srk = None, test = False, version = None):
 		self.api_key = api_key
 		self.api_secret = api_secret
 		self.srk = srk
+		self.test = test
+		if version:
+			self.version = version
 
 	def __get_signature__(self):
 		salt = str(uuid.uuid1())
@@ -121,6 +121,8 @@ class rest:
 		host = self.host + ':' + str(self.port)
 		selector = "/%s/send" % self.version
 		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':mtype, 'to':to, 'text':text}
+		if self.test:
+			fields['mode'] = 'test'
 		if self.srk != None:
 			fields['srk'] = self.srk
 		if sender:
