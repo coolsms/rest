@@ -98,14 +98,7 @@ class rest:
 	def set_image(self, image):
 		self.imgfile = image
 
-	def send(self, to, text, sender='', mtype=None, subject='', image=None, datetime=None):
-		if to == '':
-			self.__set_error__('to parameter input required')
-			return False
-		if text == '':
-			self.__set_error__('text parameter input required')
-			return False
-
+	def send(self, to=None, text=None, sender=None, mtype=None, subject=None, image=None, datetime=None, extension=None):
 		if type(to) == list:
 			to = ','.join(to)
 
@@ -120,17 +113,23 @@ class rest:
 
 		host = self.host + ':' + str(self.port)
 		selector = "/%s/send" % self.version
-		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':mtype, 'to':to, 'text':text}
+		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':mtype}
 		if self.test:
 			fields['mode'] = 'test'
 		if self.srk != None:
 			fields['srk'] = self.srk
+		if to:
+			fields['to'] = to
+		if text:
+			fields['text'] = text
 		if sender:
 			fields['from'] = sender
 		if subject:
 			fields['subject'] = subject
 		if datetime:
 			fields['datetime'] = datetime
+		if extension:
+			fields['extension'] = extension
 
 		if image == None:
 			image = self.imgfile
