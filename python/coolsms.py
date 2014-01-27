@@ -163,7 +163,7 @@ class rest:
 			return False
 		return json.loads(response)
 
-	def status(self, page = 1, count = 20, mid = None, gid = None, s_rcpt = None, s_start = None, s_end = None):
+	def status(self, page = 1, count = 20, s_rcpt = None, s_start = None, s_end = None):
 		timestamp, salt, signature = self.__get_signature__()
 
 		conn = httplib.HTTPConnection(self.host, self.port)
@@ -172,10 +172,6 @@ class rest:
 			params['page'] = page
 		if count:
 			params['count'] = count
-		if mid:
-			params['mid'] = mid
-		if gid:
-			params['gid'] = gid
 		if s_rcpt:
 			params['s_rcpt'] = s_rcpt
 		if s_start:
