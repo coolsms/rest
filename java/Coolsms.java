@@ -2,12 +2,9 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-
 import javax.crypto.*;
-import javax.crypto.spec.SecretKeySpec; 
-
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Random;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -23,13 +20,17 @@ public class Coolsms {
 		this.api_secret = api_secret;
 	}
 	
+	/*
+	 * Send Message
+	 */
 	public SendResult send(Set set) {
 		String response = "";
 		SendResult send = null;
 		try {
 			String nums = "";
-			if (set.getTo().length >= 1)
+			if (set.getTo().length >= 1){
 				nums = arrayJoin(",", set.getTo());
+			}
 
 			String to = nums;
 			String salt = salt();
@@ -58,74 +59,82 @@ public class Coolsms {
 						+ "="
 						+ URLEncoder.encode(this.timestamp, set.getCharset());
 
-				if (set.getFrom() != null)
+				if (set.getFrom() != null){
 					data += "&"
 							+ URLEncoder.encode("from", set.getCharset())
 							+ "="
 							+ URLEncoder
 									.encode(set.getFrom(), set.getCharset());
-				if (set.getType() != null)
+				}
+				if (set.getType() != null){
 					data += "&"
 							+ URLEncoder.encode("type", set.getCharset())
 							+ "="
 							+ URLEncoder
 									.encode(set.getType(), set.getCharset());
-				if (set.getRefname() != null)
+				}
+				if (set.getRefname() != null){
 					data += "&"
 							+ URLEncoder.encode("refname", set.getCharset())
 							+ "="
 							+ URLEncoder.encode(set.getRefname(),
 									set.getCharset());
-				if (set.getCountry() != null)
+				}
+				if (set.getCountry() != null){
 					data += "&"
 							+ URLEncoder.encode("country", set.getCharset())
 							+ "="
 							+ URLEncoder.encode(set.getCountry(),
 									set.getCharset());
-				if (set.getDatetime() != null)
+				}
+				if (set.getDatetime() != null){
 					data += "&"
 							+ URLEncoder.encode("datetime", set.getCharset())
 							+ "="
 							+ URLEncoder.encode(set.getDatetime(),
 									set.getCharset());
-				if (set.getMid() != null)
-					data += "&" + URLEncoder.encode("mid", set.getCharset())
+				}
+				if (set.getSrk() != null){
+					data += "&" + URLEncoder.encode("srk", set.getCharset())
 							+ "="
-							+ URLEncoder.encode(set.getMid(), set.getCharset());
-				if (set.getGid() != null)
-					data += "&" + URLEncoder.encode("gid", set.getCharset())
+							+ URLEncoder.encode(set.getSrk(), set.getCharset());
+				}
+				if (set.getMode() != null){
+					data += "&" + URLEncoder.encode("mode", set.getCharset())
 							+ "="
-							+ URLEncoder.encode(set.getGid(), set.getCharset());
-				if (set.getSubject() != null)
+							+ URLEncoder.encode(set.getMode(), set.getCharset());
+				}
+				if (set.getSubject() != null){
 					data += "&"
 							+ URLEncoder.encode("subject", set.getCharset())
 							+ "="
 							+ URLEncoder.encode(set.getSubject(),
 									set.getCharset());
-				if (set.getCharset() != null)
+				}
+				if (set.getCharset() != null){
 					data += "&"
 							+ URLEncoder.encode("charset", set.getCharset())
 							+ "="
 							+ URLEncoder.encode(set.getCharset(),
 									set.getCharset());
+				}
 
-				OutputStreamWriter wr = new OutputStreamWriter(
-						conn.getOutputStream());
+				System.out.println("data");
+				System.out.println(data);
+				OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 
 				wr.write(data);
 				wr.flush();
 				wr.close();
 			} else {
-				String boundary = "^***********^";
+				String boundary = "^***********^" + salt;
 				String delimiter = "\r\n--" + boundary + "\r\n";
 
 				conn.setRequestProperty("Connection", "Keep-Alive");
-				conn.setRequestProperty("Content-Type",
-						"multipart/form-data;boundary=" + boundary);
+				conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 				conn.setUseCaches(false);
 
 				StringBuffer postDataBuilder = new StringBuffer();
-
 				postDataBuilder.append(delimiter);
 				postDataBuilder.append(setValue("charset", set.getCharset()));
 				postDataBuilder.append(delimiter);
@@ -153,64 +162,56 @@ public class Coolsms {
 					postDataBuilder.append(delimiter);
 				}
 				if (set.getRefname() != null) {
-					postDataBuilder
-							.append(setValue("refname", set.getRefname()));
+					postDataBuilder.append(setValue("refname", set.getRefname()));
 					postDataBuilder.append(delimiter);
 				}
 				if (set.getCountry() != null) {
-					postDataBuilder
-							.append(setValue("country", set.getCountry()));
+					postDataBuilder.append(setValue("country", set.getCountry()));
 					postDataBuilder.append(delimiter);
 				}
 				if (set.getDatetime() != null) {
-					postDataBuilder.append(setValue("datetime",
-							set.getDatetime()));
+					postDataBuilder.append(setValue("datetime", set.getDatetime()));
 					postDataBuilder.append(delimiter);
 				}
-				if (set.getMid() != null) {
-					postDataBuilder.append(setValue("mid", set.getMid()));
+				if (set.getSrk() != null) {
+					postDataBuilder.append(setValue("srk", set.getSrk()));
 					postDataBuilder.append(delimiter);
 				}
-				if (set.getGid() != null) {
-					postDataBuilder.append(setValue("gid", set.getGid()));
+				if (set.getMode() != null) {
+					postDataBuilder.append(setValue("mode", set.getMode()));
 					postDataBuilder.append(delimiter);
 				}
 				if (set.getSubject() != null) {
-					postDataBuilder
-							.append(setValue("subject", set.getSubject()));
+					postDataBuilder.append(setValue("subject", set.getSubject()));
 					postDataBuilder.append(delimiter);
 				}
 				if (set.getCharset() != null) {
-					postDataBuilder
-							.append(setValue("charset", set.getCharset()));
+					postDataBuilder.append(setValue("charset", set.getCharset()));
 					postDataBuilder.append(delimiter);
 				}
-
 				postDataBuilder.append(setFile("image", set.getImage()));
 				postDataBuilder.append("\r\n");
 				String filePath = set.getImagePath() + set.getImage();
-
-				FileInputStream an = new FileInputStream(filePath);
+				FileInputStream fs = new FileInputStream(filePath);
 				DataOutputStream out = new DataOutputStream(new BufferedOutputStream(conn.getOutputStream()));
 				out.writeUTF(postDataBuilder.toString());
 
 				// 파일 복사 작업 시작
 				int maxBufferSize = 1024;
-				int bufferSize = Math.min(an.available(), maxBufferSize);
+				int bufferSize = Math.min(fs.available(), maxBufferSize);
 				byte[] buffer = new byte[bufferSize];
 				// 버퍼 크기만큼 파일로부터 바이트 데이터를 읽는다.
-				int byteRead = an.read(buffer, 0, bufferSize);
+				int byteRead = fs.read(buffer, 0, bufferSize);
 				// 전송
 				while (byteRead > 0) {
 					out.write(buffer);
-					bufferSize = Math.min(an.available(), maxBufferSize);
-					byteRead = an.read(buffer, 0, bufferSize);
+					bufferSize = Math.min(fs.available(), maxBufferSize);
+					byteRead = fs.read(buffer, 0, bufferSize);
 				}
-
-				out.writeBytes(delimiter); // 반드시 작성해야 한다.
+				out.writeBytes(delimiter); 
 				out.flush();
 				out.close();
-				an.close();
+				fs.close();
 			}
 
 			String inputLine; // 서버로 부터 받은 response를 받을 변수
@@ -220,22 +221,20 @@ public class Coolsms {
 			{
 				response = getErrorString(responseCode);
 			} else {
-				BufferedReader in = new BufferedReader(new InputStreamReader(
-						conn.getInputStream()));
+				BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while ((inputLine = in.readLine()) != null) {
 					response = inputLine;
 				}
-			}					
+			}			
 
 			if (response != null) {
 				JSONObject obj = (JSONObject) JSONValue.parse(response);
-				if (obj != null) {
-					send = new SendResult();
-					send.setRecipient_number(obj.get("recipient_number") + "");
-					send.setGroup_id(obj.get("group_id") + "");
-					send.setMessage_id(obj.get("message_id") + "");
+				if (obj != null) {					
+					send = new SendResult();					
+					send.setGroup_id(obj.get("group_id") + "");					
 					send.setResult_code(obj.get("result_code") + "");
 					send.setResult_message(obj.get("result_message") + "");
+					send.setSuccessCount(obj.get("success_count") + "");
 					send.setErrorCount(obj.get("error_count") + "");
 				} else {
 					send = new SendResult();
@@ -245,7 +244,6 @@ public class Coolsms {
 				send = new SendResult();
 				send.setErrorString("서버로부터 받은 값이 없습니다.");
 			}
-
 		} catch (Exception e) {
 			send = new SendResult();
 			send.setErrorString(e.getMessage());
@@ -253,6 +251,9 @@ public class Coolsms {
 		return send;
 	}
 	
+	/*
+	 * SentMessage
+	 */
 	public SentResult[] sent(Set set) {
 		SentResult sent[] = null;
 
@@ -299,16 +300,14 @@ public class Coolsms {
 						+ URLEncoder.encode(set.getSEnd(), charset);
 			}
 
-			String sent_url = base_url+"sent" + "?"
-					+ data;
+			String sent_url = base_url+"sent" + "?"+ data;
 			String response = null;
-
 			response = transmit_get(sent_url);
 
 			JSONObject obj = (JSONObject) JSONValue.parse(response);
 
 			if (response != null) {
-				if (obj != null) {
+				if (obj != null) {					
 					JSONArray array = (JSONArray) obj.get("data");
 					sent = new SentResult[array.size()];
 					for (int i = 0; array.size() > i; i++) {
@@ -318,8 +317,7 @@ public class Coolsms {
 						sent[i].setPage(obj.get("page") + "");
 
 						JSONObject obj2 = (JSONObject) array.get(i);
-						sent[i].setResult_message(obj2.get("result_message")
-								+ "");
+						sent[i].setResult_message(obj2.get("result_message")+ "");
 						sent[i].setResult_code(obj2.get("result_code") + "");
 						sent[i].setText(obj2.get("text") + "");
 						sent[i].setStatus(obj2.get("status") + "");
@@ -328,8 +326,7 @@ public class Coolsms {
 						sent[i].setGroup_id(obj2.get("group_id") + "");
 						sent[i].setMessage_id(obj2.get("message_id") + "");
 						sent[i].setType(obj2.get("type") + "");
-						sent[i].setRecipient_number(obj2
-								.get("recipient_number") + "");
+						sent[i].setRecipient_number(obj2.get("recipient_number") + "");
 					}
 				} else {
 					sent = new SentResult[1];
@@ -386,12 +383,9 @@ public class Coolsms {
 			URL url = new URL(base_url+"cancel");
 
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // connect
-
 			conn.setDoOutput(true);
 
-			OutputStreamWriter wr = new OutputStreamWriter(
-					
-			conn.getOutputStream());
+			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(data);
 			wr.flush();
 			wr.close();
@@ -404,8 +398,7 @@ public class Coolsms {
 			{
 				response = getErrorString(responseCode);
 			} else {
-				BufferedReader in = new BufferedReader(new InputStreamReader(
-						conn.getInputStream()));
+				BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while ((inputLine = in.readLine()) != null) {
 					response = inputLine;
 				}
@@ -420,7 +413,7 @@ public class Coolsms {
 					}
 				} else {
 					cancel = new CancelResult();
-				}
+				}	
 			}
 		} catch (Exception e) {
 			cancel = new CancelResult();
@@ -430,6 +423,10 @@ public class Coolsms {
 		return cancel;
 	}
 
+	
+	/*
+	 * BalanceInfo
+	 */
 	public BalanceResult balance() {
 		String response = "";
 		String charset = "UTF8";
@@ -437,6 +434,8 @@ public class Coolsms {
 		String signature = getSignature(this.api_secret, salt); // getSignature
 		String data = null;
 
+		BalanceResult balance = new BalanceResult();
+		
 		try {
 			data = URLEncoder.encode("api_key", charset) + "="
 					+ URLEncoder.encode(this.api_key, charset);
@@ -446,17 +445,13 @@ public class Coolsms {
 					+ URLEncoder.encode(salt, charset);
 			data += "&" + URLEncoder.encode("timestamp", charset) + "="
 					+ URLEncoder.encode(this.timestamp, charset);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {			
+			balance.setErrorString(e.toString());
+			return balance;
 		}
 
-		String sent_url = base_url+"balance" + "?" + data;
-		System.out.println(sent_url);
-
-		response = transmit_get(sent_url); // GET방식 전송
-
-		BalanceResult balance = new BalanceResult();
+		String sent_url = base_url+"balance" + "?" + data;		
+		response = transmit_get(sent_url); // GET방식 전송	
 
 		if (response != null) {
 			JSONObject obj = (JSONObject) JSONValue.parse(response);
@@ -477,8 +472,6 @@ public class Coolsms {
 		String response = "";
 		String inputLine; // 서버로 부터 받은 response를 받을 변수
 		
-		System.out.println("WWW");
-		System.out.println(sent_url);
 		try {
 			URL url = new URL(sent_url);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // connect			
@@ -520,6 +513,8 @@ public class Coolsms {
 			errorString = "서버내부오류.";
 		} else if (responseCode == 400) {
 			errorString = "리소스에 접근 METHOD 가 잘못 되었습니다.";
+		}else if (responseCode == 413) {
+			errorString = "이미지파일 사이즈 300KB 초과.";
 		}
 
 		return errorString;
@@ -532,15 +527,11 @@ public class Coolsms {
 		
 		try {
 			String temp = timestamp + salt;
-
-			SecretKeySpec keySpec = new SecretKeySpec(api_secret.getBytes(),
-					"HmacMD5");
-
+			SecretKeySpec keySpec = new SecretKeySpec(api_secret.getBytes(), "HmacMD5");
 			Mac mac = Mac.getInstance("HmacMD5");
 			mac.init(keySpec);
 
 			byte[] result = mac.doFinal(temp.getBytes());
-
 			char[] hexArray = "0123456789ABCDEF".toCharArray();
 			char[] hexChars = new char[result.length * 2];
 
@@ -549,7 +540,6 @@ public class Coolsms {
 				hexChars[i * 2] = hexArray[positive >>> 4];
 				hexChars[i * 2 + 1] = hexArray[positive & 0x0F];
 			}
-
 			signature = new String(hexChars);
 		} catch (Exception e) {
 			signature = e.getMessage();
@@ -565,8 +555,7 @@ public class Coolsms {
 
 		// length - set the unique Id length
 		for (int length = 1; length <= 10; ++length) {
-			int randomInt = randomGenerator.nextInt(10); // digit range from 0 -
-															// 9
+			int randomInt = randomGenerator.nextInt(10); // digit range from 0 - 9
 			uniqId += randomInt + "";
 		}
 		
@@ -579,7 +568,6 @@ public class Coolsms {
 	public String arrayJoin(String glue, String array[]) 
 	{
 		String result = "";
-
 		for(int i = 0; i < array.length; i++) 
 		{
 			result += array[i];
@@ -596,8 +584,7 @@ public class Coolsms {
      * @return
      */
 	public String setValue(String key, String value) {
-		return "Content-Disposition: form-data; name=\"" + key + "\"\r\n\r\n"
-				+ value;
+		return "Content-Disposition: form-data; name=\"" + key + "\"\r\n\r\n"+ value;
 	}
  
     /**
