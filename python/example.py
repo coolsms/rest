@@ -93,6 +93,7 @@ class smsui:
 	def refresh_status(self, evt):
 		r = self.__get_api__()
 		status = r.status(page=self.page, count=29)
+		print status
 		data = status['data']
 		total_count = status['total_count']
 		list_count = status['list_count']

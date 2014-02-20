@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """
- Copyright (C) 2008-2013 NURIGO
+ Copyright (C) 2008-2014 NURIGO
  http://www.coolsms.co.kr
 """
 
@@ -11,7 +11,7 @@ import httplib,urllib,sys,hmac,mimetypes,base64,array,uuid,json,time
 
 def post_multipart(host, selector, fields, files):
 	content_type, body = encode_multipart_formdata(fields, files)
-	h = httplib.HTTP(host)
+	h = httplib.HTTPS(host)
 	h.putrequest('POST', selector)
 	h.putheader('content-type', content_type)
 	h.putheader('content-length', str(len(body)))
@@ -55,7 +55,7 @@ def get_content_type(filename):
 
 class rest:
 	host = 'api.coolsms.co.kr'
-	port = 80
+	port = 443
 	version = '1'
 	api_key = None
 	api_secret = None
@@ -163,11 +163,8 @@ class rest:
 			return False
 		return json.loads(response)
 
-	def status(self, page = 1, count = 20, s_rcpt = None, s_start = None, s_end = None):
-		timestamp, salt, signature = self.__get_signature__()
-
-		conn = httplib.HTTPConnection(self.host, self.port)
-		params = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()}
+	def status(self, page = 1, count = 20, s_rcpt = None, s_start = None, s_end = None, mid = None):
+		params = dict()
 		if page:
 			params['page'] = page
 		if count:
@@ -178,62 +175,57 @@ class rest:
 			params['s_start'] = s_start
 		if s_end:
 			params['s_end'] = s_end
-		params_str = urllib.urlencode(params)
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("GET", "/%s/sent?" % self.version + params_str, None, headers)
-		response = conn.getresponse()
-		data = response.read()
-		conn.close()
-		return json.loads(data)
+		if mid:
+			params['mid'] = mid
+		response, obj = self.request_get('sent', params)
+		return obj
 
 	def balance(self):
 		timestamp, salt, signature = self.__get_signature__()
-
-		conn = httplib.HTTPConnection(self.host, self.port)
-		params = urllib.urlencode({'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()})
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("GET", "/%s/balance?" % self.version + params, None, headers)
-		response = conn.getresponse()
-		data = response.read()
-		conn.close()
-		obj = json.loads(data)
+		response, obj = self.request_get('balance')
 		return int(obj['cash']), int(obj['point'])
 
 	def cancel(self, mid = None, gid = None):
 		if mid == None and gid == None:
 			return False
 
-		timestamp, salt, signature = self.__get_signature__()
-
-		conn = httplib.HTTPConnection(self.host, self.port)
+		params = dict()
 		if mid:
-			params = urllib.urlencode({'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'mid':mid})
+			params['mid'] = mid
 		if gid:
-			params = urllib.urlencode({'api_key':self.api_key, 'salt':salt, 'signature':signature.hexdigest(), 'gid':gid})
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
-		conn.request("POST", "/%s/cancel" % self.version, params, headers)
-		response = conn.getresponse()
-		data = response.read()
-		conn.close()
+			params['gid'] = gid
+
+		response, obj = self.request_post('cancel', params)
 		if response.status == 200:
 			return True
 		return False
 
-def main():
-	user_id = "test"
-	api_key = "NCS52A57F48C3D32"
-	api_secret = "5AC44E03CE8E7212D9D1AD9091FA9966"
-	mid = "M52A95079DE2B0";
-	gid = "G52A95079DDA04";
+	def request_get(self, resource, params = None):
+		timestamp, salt, signature = self.__get_signature__()
+		base_params = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()}
+		if params:
+			base_params = dict(base_params.items() + params.items())
+		params_str = urllib.urlencode(base_params)
+		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+		conn = httplib.HTTPSConnection(self.host, self.port)
+		conn.request("GET", "/%s/%s?" % (self.version, resource) + params_str, None, headers)
+		response = conn.getresponse()
+		data = response.read()
+		conn.close()
+		obj = response, json.loads(data)
+		return obj
 
-	r = rest(api_key, api_secret, user_id)
-	#r.send()
-	r.status(gid=gid)
-	#r.balance()
-	#r.set_report_url()
-	#r.cancel(gid=gid)
-	#r.get_report_url()
-
-if __name__ == "__main__":
-	main()
-	sys.exit(0)
+	def request_post(self, resource, params = None):
+		timestamp, salt, signature = self.__get_signature__()
+		base_params = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest()}
+		if params:
+			base_params = dict(base_params.items() + params.items())
+		params_str = urllib.urlencode(base_params)
+		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+		conn = httplib.HTTPSConnection(self.host, self.port)
+		conn.request("GET", "/%s/%s?" % (self.version, resource) + params_str, None, headers)
+		response = conn.getresponse()
+		data = response.read()
+		conn.close()
+		json_obj = json.loads(data)
+		return response, json_obj

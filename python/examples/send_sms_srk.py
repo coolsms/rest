@@ -13,8 +13,8 @@ def main():
 	to = '01000000000'
 	sender = '01012345678'
 	message = '테스트 메시지'
-	cool = coolsms.rest(api_key, api_secret)
-	status = cool.send(to,message,sender,datetime='20140213140000')
+	cool = coolsms.rest(api_key, api_secret, srk='K0000242263')
+	status = cool.send(to,message,sender)
 	print status
 
 if __name__ == "__main__":
