@@ -1,30 +1,17 @@
 
 public class SendResult {
-	private String recipient_number;
 	private String group_id;
-	private String message_id;
 	private String result_code;
 	private String result_message;
 	private String errorString;
 	private String errorCount;
+	private String successCount;
 	
-	public String getRecipient_number() {
-		return recipient_number;
-	}
-	public void setRecipient_number(String recipient_number) {
-		this.recipient_number = recipient_number;
-	}
 	public String getGroup_id() {
 		return group_id;
 	}
 	public void setGroup_id(String group_id) {
 		this.group_id = group_id;
-	}
-	public String getMessage_id() {
-		return message_id;
-	}
-	public void setMessage_id(String message_id) {
-		this.message_id = message_id;
 	}
 	public String getResult_code() {
 		return result_code;
@@ -49,5 +36,11 @@ public class SendResult {
 	}
 	public void setErrorCount(String errorCount) {
 		this.errorCount = errorCount;
+	}
+	public String getSuccessCount() {
+		return successCount;
+	}
+	public void setSuccessCount(String successCount) {
+		this.successCount = successCount;
 	}
 }

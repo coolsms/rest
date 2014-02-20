@@ -18,6 +18,10 @@ public class Set
 	private String sStart;
 	private String sEnd;
 	private String charset="UTF8";	
+	private String srk;
+	private String mode;
+	//private String extension;
+	
 	
 	public String[] getTo() {
 		return to;
@@ -166,5 +170,21 @@ public class Set
 
 	public void setSEnd(String s_end) {
 		this.sEnd = s_end;
+	}
+
+	public String getSrk() {
+		return srk;
+	}
+
+	public void setSrk(String srk) {
+		this.srk = srk;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 }
