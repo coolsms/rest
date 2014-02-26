@@ -1,25 +1,25 @@
 public class Set
 {
-	private String[] to;
-	private String from;
-	private String text;
-	private String type;
-	private String image;
+	private String[] to=null;
+	private String from=null;
+	private String text=null;
+	private String type=null;
+	private String image=null;
 	private String imagePath="./";
-	private String refname;
-	private String country;
-	private String datetime;
-	private String mid;
-	private String gid;
-	private String subject;
-	private String count;
-	private String page;
-	private String sRcpt;
-	private String sStart;
-	private String sEnd;
+	private String refname=null;
+	private String country=null;
+	private String datetime=null;
+	private String mid=null;
+	private String gid=null;
+	private String subject=null;
+	private String count=null;
+	private String page=null;
+	private String sRcpt=null;
+	private String sStart=null;
+	private String sEnd=null;
 	private String charset="UTF8";	
-	private String srk;
-	private String mode;
+	private String srk=null;
+	private String mode=null;
 	//private String extension;
 	
 	

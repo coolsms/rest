@@ -10,8 +10,8 @@ public class SentExample {
 		Set set = new Set();
 		 
 		// 부가적인 정보		
-		set.setMid("R1M52CE5BC5AA91A");  // message_id 
-		//set.setGid("R1G52D34C2C11928"); // group_id
+		//set.setMid("R2M5301BE300FC89");  // message_id 
+		set.setGid("R2G5301BE30012C7"); // group_id
 		//set.setCount("20"); // count
 		//set.setPage("1"); // page
 		//set.setSRcpt("01025555544"); // 수신번호
@@ -19,7 +19,9 @@ public class SentExample {
 		//set.setSEnd("2014-02-01 14:10:10");	//검색 종료 날짜
 		
 		SentResult result[] = coolsms.sent(set);
-	
+			
+		System.out.println("AAA");
+		System.out.println(result[0].getErrorString());
 		if (result[0].getErrorString() == null) {
 			for (int i = 0; i < result.length; i++) {
 				System.out.println("SENT 성공");

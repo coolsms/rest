@@ -1,10 +1,14 @@
 import java.io.*;
-import java.net.HttpURLConnection;
+//import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.HttpsURLConnection;
+
 import java.util.Random;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -13,7 +17,7 @@ public class Coolsms {
 	private String api_key;
 	private String api_secret;	
 	private String timestamp;
-	private String base_url="http://api.coolsms.co.kr/1/";
+	private String base_url="https://api.coolsms.co.kr/1/";
 
 	public Coolsms(String api_key, String api_secret) {
 		this.api_key = api_key;
@@ -37,8 +41,7 @@ public class Coolsms {
 			String signature = getSignature(this.api_secret, salt); // getSignature
 
 			URL url = new URL(base_url+"send");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // connect
-
+			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection(); // connect
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
@@ -118,9 +121,7 @@ public class Coolsms {
 							+ URLEncoder.encode(set.getCharset(),
 									set.getCharset());
 				}
-
-				System.out.println("data");
-				System.out.println(data);
+				
 				OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 
 				wr.write(data);
@@ -189,6 +190,7 @@ public class Coolsms {
 					postDataBuilder.append(setValue("charset", set.getCharset()));
 					postDataBuilder.append(delimiter);
 				}
+					
 				postDataBuilder.append(setFile("image", set.getImage()));
 				postDataBuilder.append("\r\n");
 				String filePath = set.getImagePath() + set.getImage();
@@ -225,7 +227,7 @@ public class Coolsms {
 				while ((inputLine = in.readLine()) != null) {
 					response = inputLine;
 				}
-			}			
+			}
 
 			if (response != null) {
 				JSONObject obj = (JSONObject) JSONValue.parse(response);
@@ -301,13 +303,12 @@ public class Coolsms {
 			}
 
 			String sent_url = base_url+"sent" + "?"+ data;
-			String response = null;
-			response = transmit_get(sent_url);
-
-			JSONObject obj = (JSONObject) JSONValue.parse(response);
-
+			String response = null;			
+			response = transmit_get(sent_url);			
+		
 			if (response != null) {
-				if (obj != null) {					
+				JSONObject obj = (JSONObject) JSONValue.parse(response);
+				if (obj != null) {
 					JSONArray array = (JSONArray) obj.get("data");
 					sent = new SentResult[array.size()];
 					for (int i = 0; array.size() > i; i++) {
@@ -339,6 +340,7 @@ public class Coolsms {
 				sent[0].setErrorString("서버로부터 받은 값이 없습니다");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			sent = new SentResult[1];
 			sent[0] = new SentResult();
 			sent[0].setErrorString(e.getMessage());
@@ -349,14 +351,19 @@ public class Coolsms {
 	public CancelResult cancel(Set set) {
 		CancelResult cancel = null;
 		String response = null;
+		
+		System.out.println("A-1");
 
 		if (set.getMid() == null && set.getGid() == null) {
+			System.out.println("A-2");
 			cancel = new CancelResult();
 			cancel.setErrorString("Mid나 Gid중 하나는 반드시 들어가야 됩니다.");
 			return cancel;
 		}
+		System.out.println("A-3");
 
 		try {
+			System.out.println("A-4");
 			String charset = "UTF8";
 			String salt = salt();
 
@@ -382,7 +389,7 @@ public class Coolsms {
 
 			URL url = new URL(base_url+"cancel");
 
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // connect
+			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection(); // connect
 			conn.setDoOutput(true);
 
 			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -474,7 +481,7 @@ public class Coolsms {
 		
 		try {
 			URL url = new URL(sent_url);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // connect			
+			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection(); // connect			
 			
 			conn.setRequestMethod("GET");
 			
