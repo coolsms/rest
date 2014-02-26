@@ -180,6 +180,10 @@ class rest:
 		response, obj = self.request_get('sent', params)
 		return obj
 
+	def line_status(self):
+		response, obj = self.request_get('status')
+		return obj
+
 	def balance(self):
 		timestamp, salt, signature = self.__get_signature__()
 		response, obj = self.request_get('balance')
