@@ -8,7 +8,11 @@ public class SendExample {
 		Coolsms coolsms = new Coolsms(base.getApiKey(), base.getApiSecret());
 		
 		// 부가정보
-		Set set = new Set();				
+		Set set = new Set();
+		set.setTo("01090683469"); // 받는사람 번호
+		set.setFrom("029302266"); // 보내는 사람 번호
+		//set.setDatetime("201404151230"); // 예약전송시 날짜 설정
+		set.setText("안뇽"); // 문자내용 SMS(80바이트), LMS(장문 2,000바이트), MMS(장문+이미지)
 		/*		
 		set.setTo("01090683469"); // 받는사람 번호
 		setSend.setTo(new String[] { "01040683469", "01041683469", "01052683469", "01043683469" }); // 받는사람 번호 여러개 입력시
