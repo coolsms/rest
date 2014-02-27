@@ -12,7 +12,7 @@ $signature = hash_hmac('md5', $data, $api_secret);
     	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	</head>
 	<body>
-		<form method="get" action="http://api.coolsms.co.kr/1/sent" enctype="multipart/form-data">
+		<form method="get" action="https://api.coolsms.co.kr/1/sent" enctype="multipart/form-data">
 			API Key: <input type="text" name="api_key" value="<?php echo $api_key ?>" /><br />
 			Timestame: <input type="text" name="timestamp" value="<?php echo $timestamp ?>" /><br />
 			Salt: <input type="text" name="salt" value="<?php echo $salt ?>" /><br />
