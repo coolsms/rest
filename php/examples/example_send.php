@@ -18,7 +18,7 @@ $apisecret = '#ENTER_YOUR_OWN#';
 
 
 //initiate rest api sdk object
-$rest = new rest($apikey, $apisecret);
+$rest = new coolsms($apikey, $apisecret);
 
 
 /*
