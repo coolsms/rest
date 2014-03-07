@@ -17,7 +17,7 @@ $apikey = '#ENTER_YOUR_OWN#';
 $apisecret = '#ENTER_YOUR_OWN#';
 
 //initiate rest api sdk object
-$rest = new rest($apikey, $apisecret);
+$rest = new coolsms($apikey, $apisecret);
 
 //set necessary options
 $options->mid = 'M52CB443257C61';			//message id 
