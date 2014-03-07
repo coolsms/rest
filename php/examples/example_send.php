@@ -25,8 +25,8 @@ $rest = new coolsms($apikey, $apisecret);
  **  5 options(timestamp, to, from, type, text) are mandatory. must be filled
  */
 $options->timestamp = (string)time();
-$options->to = '01021725487';
-$options->from = '01021725487';
+$options->to = '#받는사람 번호';
+$options->from = '#보내는 사람 번호';
 $options->type = 'SMS';
 $options->text = '안녕하세요 <- This means hello in Korean. ';
 
