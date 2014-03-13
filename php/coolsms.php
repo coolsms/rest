@@ -65,6 +65,7 @@ class coolsms
 		$this->salt = uniqid();
 		$this->timestamp = (string)time();
 
+		$options->User_Agent = "PHP";
 		$options->salt = $this->salt;
 		$options->timestamp = $this->timestamp;
 		$options->api_key = $this->api_key;
