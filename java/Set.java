@@ -1,3 +1,5 @@
+import org.json.simple.JSONArray;
+
 public class Set
 {
 	private String[] to=null;
@@ -20,7 +22,7 @@ public class Set
 	private String charset="UTF8";	
 	private String srk=null;
 	private String mode=null;
-	//private String extension;
+	private JSONArray extension=null;
 	
 	
 	public String[] getTo() {
@@ -186,5 +188,13 @@ public class Set
 
 	public void setMode(String mode) {
 		this.mode = mode;
+	}
+
+	public JSONArray getExtension() {
+		return extension;
+	}
+
+	public void setExtension(JSONArray extension) {
+		this.extension = extension;
 	}
 }

@@ -1,7 +1,7 @@
 
 public class CancelResult {
 
-	private String errorString = "";
+	private String errorString;
 
 	public String getErrorString() {
 		return errorString;

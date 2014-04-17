@@ -13,55 +13,78 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+/*
+ *  RestApi JAVA 
+ *  v0.1 BETA  
+ */
+
 public class Coolsms {
 	private String api_key;
 	private String api_secret;	
 	private String timestamp;
-	private String base_url="https://api.coolsms.co.kr/1/";
+	private String base_url;
 
-	public Coolsms(String api_key, String api_secret) {
-		this.api_key = api_key;
-		this.api_secret = api_secret;
+	/*
+	 *  Set RestApi Config
+	 */
+	public Coolsms() {
+		SetBase base = new SetBase();		
+		this.api_key = base.getApiKey();
+		this.api_secret = base.getApiSecret();
+		this.base_url = base.getBaseUrl();		
 	}
 	
 	/*
-	 * Send Message
+	 *  POST  Send Message
+	 *  @param set : Send Message Parameters
 	 */
 	public SendResult send(Set set) {
 		String response = "";
 		SendResult send = null;
+		String to = "";
+		
 		try {
-			String nums = "";
-			if (set.getTo().length >= 1){
-				nums = arrayJoin(",", set.getTo());
-			}
-
-			String to = nums;
+			// get SendNumber 
+			if (set.getTo() != null) {
+				to = arrayJoin(",", set.getTo());				
+			}		
+			
 			String salt = salt();
 			String signature = getSignature(this.api_secret, salt); // getSignature
-
 			URL url = new URL(base_url+"send");
 			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection(); // connect
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
-
 			if (set.getImage() == null) {
+				/*
+				 * Send SMS, LMS
+				 */
 				String data = URLEncoder.encode("api_key", set.getCharset())
 						+ "="
 						+ URLEncoder.encode(this.api_key, set.getCharset());
 				data += "&" + URLEncoder.encode("signature", set.getCharset())
 						+ "=" + URLEncoder.encode(signature, set.getCharset());
-				data += "&" + URLEncoder.encode("to", set.getCharset()) + "="
-						+ URLEncoder.encode(to, set.getCharset());
-				data += "&" + URLEncoder.encode("text", set.getCharset()) + "="
-						+ URLEncoder.encode(set.getText(), set.getCharset());
 				data += "&" + URLEncoder.encode("salt", set.getCharset()) + "="
 						+ URLEncoder.encode(salt, set.getCharset());
 				data += "&" + URLEncoder.encode("timestamp", set.getCharset())
 						+ "="
 						+ URLEncoder.encode(this.timestamp, set.getCharset());
-
+				
+				if (set.getText() != null){
+					data += "&"
+							+ URLEncoder.encode("text", set.getCharset())
+							+ "="
+							+ URLEncoder
+									.encode(set.getText(), set.getCharset());
+				}				
+				if (set.getTo() != null){
+					data += "&"
+							+ URLEncoder.encode("to", set.getCharset())
+							+ "="
+							+ URLEncoder
+									.encode(to, set.getCharset());
+				}				
 				if (set.getFrom() != null){
 					data += "&"
 							+ URLEncoder.encode("from", set.getCharset())
@@ -120,14 +143,21 @@ public class Coolsms {
 							+ "="
 							+ URLEncoder.encode(set.getCharset(),
 									set.getCharset());
+				}		
+				if (set.getExtension() != null){					
+					data += "&"
+							+ URLEncoder.encode("extension", set.getCharset())
+							+ "="
+							+ set.getExtension();
 				}
-				
 				OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-
 				wr.write(data);
 				wr.flush();
 				wr.close();
 			} else {
+				/*
+				 * SEND MMS
+				 */
 				String boundary = "^***********^" + salt;
 				String delimiter = "\r\n--" + boundary + "\r\n";
 
@@ -140,11 +170,7 @@ public class Coolsms {
 				postDataBuilder.append(setValue("charset", set.getCharset()));
 				postDataBuilder.append(delimiter);
 				postDataBuilder.append(setValue("api_key", this.api_key));
-				postDataBuilder.append(delimiter);
-				postDataBuilder.append(setValue("to", to));
-				postDataBuilder.append(delimiter);
-				postDataBuilder.append(setValue("text", set.getText()));
-				postDataBuilder.append(delimiter);
+				postDataBuilder.append(delimiter);				
 				postDataBuilder.append(setValue("salt", salt));
 				postDataBuilder.append(delimiter);
 				postDataBuilder.append(setValue("signature", signature));
@@ -154,6 +180,14 @@ public class Coolsms {
 				postDataBuilder.append(setValue("type", "mms"));
 				postDataBuilder.append(delimiter);
 
+				if(set.getText() != null){
+					postDataBuilder.append(setValue("text", set.getText()));
+					postDataBuilder.append(delimiter);
+				}				
+				if(to != null){
+					postDataBuilder.append(setValue("to", to));
+					postDataBuilder.append(delimiter);
+				}
 				if (set.getFrom() != null) {
 					postDataBuilder.append(setValue("from", set.getFrom()));
 					postDataBuilder.append(delimiter);
@@ -352,18 +386,13 @@ public class Coolsms {
 		CancelResult cancel = null;
 		String response = null;
 		
-		System.out.println("A-1");
-
 		if (set.getMid() == null && set.getGid() == null) {
-			System.out.println("A-2");
 			cancel = new CancelResult();
 			cancel.setErrorString("Mid나 Gid중 하나는 반드시 들어가야 됩니다.");
 			return cancel;
 		}
-		System.out.println("A-3");
 
 		try {
-			System.out.println("A-4");
 			String charset = "UTF8";
 			String salt = salt();
 
@@ -388,7 +417,6 @@ public class Coolsms {
 			}
 
 			URL url = new URL(base_url+"cancel");
-
 			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection(); // connect
 			conn.setDoOutput(true);
 
@@ -423,6 +451,7 @@ public class Coolsms {
 				}	
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			cancel = new CancelResult();
 			cancel.setErrorString(e.getMessage());
 		}
@@ -584,7 +613,7 @@ public class Coolsms {
 		return result;
 	}
 
-	/**
+	/*
      * Map 형식으로 Key와 Value를 셋팅한다.
      * @param key : 서버에서 사용할 변수명
      * @param value : 변수명에 해당하는 실제 값
@@ -594,7 +623,7 @@ public class Coolsms {
 		return "Content-Disposition: form-data; name=\"" + key + "\"\r\n\r\n"+ value;
 	}
  
-    /**
+    /*
      * 업로드할 파일에 대한 메타 데이터를 설정한다.
      * @param key : 서버에서 사용할 파일 변수명
      * @param fileName : 서버에서 저장될 파일명
