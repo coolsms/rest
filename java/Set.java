@@ -2,7 +2,7 @@ import org.json.simple.JSONArray;
 
 public class Set
 {
-	private String[] to=null;
+	private String[] to=null; 
 	private String from=null;
 	private String text=null;
 	private String type=null;

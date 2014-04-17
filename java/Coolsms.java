@@ -17,7 +17,7 @@ import org.json.simple.JSONValue;
  *  RestApi JAVA 
  *  v0.1 BETA  
  */
-
+ 
 public class Coolsms {
 	private String api_key;
 	private String api_secret;	

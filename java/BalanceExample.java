@@ -4,7 +4,7 @@
 public class BalanceExample {
 
 	public static void main(String[] args) {
-		Coolsms coolsms = new Coolsms();
+		Coolsms coolsms = new Coolsms(); 
 		
 		BalanceResult result = coolsms.balance(); // 잔액정보 가져오기
 

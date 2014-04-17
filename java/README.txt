@@ -30,4 +30,4 @@ CancelExample.java					  CANCEL 예제.
 BalanceExample.java					  BALANCE 예제.
 
 
-  사용방법은 http://doc.coolsms.co.kr/?page_id=1418 를 참고해주세요.
+  사용방법은 http://doc.coolsms.co.kr/?page_id=1418 를 참고해주세요. 

@@ -6,7 +6,7 @@ public class SentExample {
 	public static void main(String[] args) {
 		Coolsms coolsms = new Coolsms();
 				
-		Set set = new Set();
+		Set set = new Set(); 
 		 
 		// 부가적인 정보		
 		set.setMid("R1M334262297FE38");  // message_id 

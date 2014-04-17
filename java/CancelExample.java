@@ -4,7 +4,7 @@
 public class CancelExample {
 
 	public static void main(String[] args) {
-		Coolsms coolsms = new Coolsms();
+		Coolsms coolsms = new Coolsms(); 
 
 		Set set = new Set();
 		set.setMid("R1M530E9A84A631A"); // message_id
