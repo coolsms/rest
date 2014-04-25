@@ -1,10 +1,17 @@
 <?php
 
+/**
+ *
+ *   Copyright (C) 2008-2014 NURIGO
+ *   http://www.coolsms.co.kr
+ *
+ **/
+
 class coolsms
 {
 	private $api_key;
 	private	$api_secret;
-	private $host = "https://api.coolsms.co.kr";
+	private $host = "http://api.coolsms.co.kr";
 	private $version = 1;
 	private $path;
 	private $method;
@@ -20,30 +27,33 @@ class coolsms
 
 	public function curlProcess()
 	{
-		$ch = curl_init();
-
+		print_r($this->content);
+		$ch = curl_init(); 
 		// 1 = POST , 0 = GET
 		if($this->method==1)
 			$host = sprintf("%s/%s/%s", $this->host, $this->version, $this->path);
 		elseif($this->method==0)
 			$host = sprintf("%s/%s/%s?%s", $this->host, $this->version, $this->path, $this->content);
 
-		curl_setopt ($ch, CURLOPT_URL, $host);
-		curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
-		curl_setopt ($ch, CURLOPT_SSLVERSION,3); // SSL 버젼 (https 접속시에 필요)
-		curl_setopt ($ch, CURLOPT_HEADER, 0); // 헤더 출력 여부
-		curl_setopt ($ch, CURLOPT_POST, $this->method); // Post Get 접속 여부
+		curl_setopt($ch, CURLOPT_URL, $host);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); 
+		curl_setopt($ch, CURLOPT_SSLVERSION,3); // SSL 버젼 (https 접속시에 필요)
+		curl_setopt($ch, CURLOPT_HEADER, 0); // 헤더 출력 여부
+		curl_setopt($ch, CURLOPT_POST, $this->method); // Post Get 접속 여부
 		//Set POST DATA
 		if($this->method)
-			curl_setopt ($ch, CURLOPT_POSTFIELDS, $this->content); 
-		curl_setopt ($ch, CURLOPT_TIMEOUT, 10); // TimeOut 값
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1); // 결과값을 받을것인지
+		{
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type:multipart/form-data"));
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->content); 
+		}
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10); // TimeOut 값
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // 결과값을 받을것인지
 		
 		$this->result = json_decode(curl_exec($ch));
 		//Handle errors
 		if(curl_errno($ch))
 		{
-			$this->setError('-1', curl_error($ch));
+			//$this->setError('-1', curl_error($ch));
 			echo curl_error($ch);
 		}
 		curl_close ($ch);
@@ -51,8 +61,22 @@ class coolsms
 
 	private function setContent($options)
 	{
-		foreach($options as $key => $val)
-			$this->content .= $key."=".urlencode($val)."&";
+		if($this->method)
+		{
+			$this->content = array();
+			foreach($options as $key => $val)
+			{
+				if($key != "image")
+					$this->content[$key] = $val;
+				else
+					$this->content[$key] = "@".realpath("./$val");
+			}
+		}
+		else
+		{
+			foreach($options as $key => $val)
+				$this->content .= $key."=".urlencode($val)."&";
+		}
 	}
 
 	private function getSignature()
@@ -65,7 +89,7 @@ class coolsms
 		$this->salt = uniqid();
 		$this->timestamp = (string)time();
 
-		$options->User_Agent = "PHP";
+		$options->User_Agent = "PHP REST API v1.0";
 		$options->salt = $this->salt;
 		$options->timestamp = $this->timestamp;
 		$options->api_key = $this->api_key;
@@ -158,8 +182,25 @@ class coolsms
 		return $this->getResult();
 	}
 
-
-
+	private function objectToArray($d) {
+		if (is_object($d)) {
+			// Gets the properties of the given object
+			// with get_object_vars function
+			$d = get_object_vars($d);
+		}
+ 
+		if (is_array($d)) {
+			/*
+			* Return array converted to object
+			* Using __FUNCTION__ (Magic constant)
+			* for recursive call
+			*/
+			return array_map(__FUNCTION__, $d);
+		}
+		else {
+			// Return array
+			return $d;
+		}
+	}
 }
 ?>
-
