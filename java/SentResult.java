@@ -17,7 +17,7 @@ public class SentResult {
 	
 	
 	public String getResult_message() {
-		return result_message;
+		return result_message; 
 	}
 	public void setResult_message(String result_message) {
 		this.result_message = result_message;

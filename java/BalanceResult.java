@@ -4,7 +4,7 @@ public class BalanceResult {
 	private String errorString;
 	
 	public String getPoint() {
-		return point;
+		return point; 
 	}
 	public void setPoint(Object object) {
 		this.point = (String) object;

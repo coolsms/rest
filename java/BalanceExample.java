@@ -4,8 +4,7 @@
 public class BalanceExample {
 
 	public static void main(String[] args) {
-		SetBase base = new SetBase();
-		Coolsms coolsms = new Coolsms(base.getApiKey(), base.getApiSecret());
+		Coolsms coolsms = new Coolsms(); 
 		
 		BalanceResult result = coolsms.balance(); // 잔액정보 가져오기
 

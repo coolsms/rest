@@ -7,16 +7,16 @@
  *
  */
 
-include_once "rest.php";
+include_once "coolsms.php";
 
 /*
  ** api_key and api_secret can be obtained from www.coolsms.co.kr/credentials
  */
-$apikey = 'NCS52A57F48C3D32';
-$apisecret = '5AC44E03CE8E7212D9D1AD9091FA9966';
+$apikey = '#ENTER_YOUR_OWN#';
+$apisecret = '#ENTER_YOUR_OWN#';
 
 //initiate rest api sdk object 
-$rest = new rest($apikey, $apisecret);
+$rest = new coolsms($apikey, $apisecret);
 
 // Either mid or gid must be entered. 
 $options->mid = 'M52CB443257C61';			//message id. 

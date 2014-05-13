@@ -1,17 +1,16 @@
 /*
- *  SENT 예제 입니다.
+ *  SENT(발송문자확인) 예제 입니다.
  */
 public class SentExample {
 
 	public static void main(String[] args) {
-		SetBase base = new SetBase();
-		Coolsms coolsms = new Coolsms(base.getApiKey(), base.getApiSecret());
+		Coolsms coolsms = new Coolsms();
 				
-		Set set = new Set();
+		Set set = new Set(); 
 		 
 		// 부가적인 정보		
-		//set.setMid("R2M5301BE300FC89");  // message_id 
-		set.setGid("R2G5301BE30012C7"); // group_id
+		set.setMid("R1M334262297FE38");  // message_id 
+		//set.setGid("R2G532FE991BFD40"); // group_id
 		//set.setCount("20"); // count
 		//set.setPage("1"); // page
 		//set.setSRcpt("01025555544"); // 수신번호
@@ -20,8 +19,6 @@ public class SentExample {
 		
 		SentResult result[] = coolsms.sent(set);
 			
-		System.out.println("AAA");
-		System.out.println(result[0].getErrorString());
 		if (result[0].getErrorString() == null) {
 			for (int i = 0; i < result.length; i++) {
 				System.out.println("SENT 성공");
