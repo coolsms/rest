@@ -7,19 +7,25 @@
 __version__ = "1.0beta"
 
 from hashlib import md5
-import httplib,urllib,sys,hmac,mimetypes,base64,array,uuid,json,time
+import sys,httplib,urllib,hmac,mimetypes,uuid,json,time
+# reload(sys) needs to use sys.setdefaultencoding()
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
+# send multipart form to the server
 def post_multipart(host, selector, fields, files):
 	content_type, body = encode_multipart_formdata(fields, files)
 	h = httplib.HTTPS(host)
 	h.putrequest('POST', selector)
 	h.putheader('content-type', content_type)
 	h.putheader('content-length', str(len(body)))
+	h.putheader('User-Agent', 'Python/1.0beta')
 	h.endheaders()
 	h.send(body)
 	errcode, errmsg, headers = h.getreply()
 	return errcode, errmsg, h.file.read()
 
+# format multipart form
 def encode_multipart_formdata(fields, files):
 	BOUNDARY = str(uuid.uuid1())
 	CRLF = '\r\n'
@@ -32,18 +38,11 @@ def encode_multipart_formdata(fields, files):
 	L.append('')
 	body = CRLF.join(L)
 	for key, value in files.items():
-		#L.append('--' + BOUNDARY)
-		#L.append('Content-Type: %s' % get_content_type(value['filename']))
-		#L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, value['filename']))
-		#L.append('')
-		#L.append(value['content'])
 		body = body + '--' + BOUNDARY + CRLF
 		body = body + 'Content-Type: %s' % get_content_type(value['filename']) + CRLF
 		body = body + 'Content-Disposition: form-data; name="%s"; filename="%s"' % (key, value['filename']) + CRLF
 		body = body + CRLF
 		body = body.encode('utf-8') + value['content'] + CRLF
-	#L.append('--' + BOUNDARY + '--')
-	#L.append('')
 	body = body + '--' + BOUNDARY + '--' + CRLF
 	body = body + CRLF
 	content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
@@ -52,20 +51,40 @@ def encode_multipart_formdata(fields, files):
 def get_content_type(filename):
 	return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
-
+# class rest
+# SMS Gateway access url : https://api.coolsms.co.kr/{verson}/{resource name}
 class rest:
-	host = 'api.coolsms.co.kr'
+	# SMS Gateway address
+	host = 't1.coolsms.co.kr'
+
+	# use secure channel as default
 	port = 443
+
+	# protocol version
 	version = '1'
+
+	# API Key
 	api_key = None
+
+	# API Secret
 	api_secret = None
+
+	# solution registration key
 	srk = None
-	uesr_id = None
+
+	# message type (sms, lms, mms)
 	mtype = 'sms'
+
+	# image file
 	imgfile = None
+
+	# error handle
 	error_string = None
+
+	# TRUE : test mode
 	test = False
 
+	# constructor
 	def __init__(self, api_key, api_secret, srk = None, test = False, version = None):
 		self.api_key = api_key
 		self.api_secret = api_secret
@@ -74,30 +93,37 @@ class rest:
 		if version:
 			self.version = version
 
+	# return salt, timestamp, signature
 	def __get_signature__(self):
 		salt = str(uuid.uuid1())
 		timestamp = str(int(time.time()))
 		data = timestamp + salt
 		return timestamp, salt, hmac.new(self.api_secret, data, md5)
 
+	# error handle
 	def __set_error__(self, error_str):
 		self.error_string = error_str
 
+	# return message type set
 	def get_type(self):
 		return self.mtype
 
+	# return error string set
 	def get_error(self):
 		return self.error_string
 
+	# set one of sms , lms , mms
 	def set_type(self, mtype):
 		if mtype.lower() not in ['sms','lms','mms']:
 			return False
 		self.mtype = mtype.lower()
 		return True
 
+	# set image file path
 	def set_image(self, image):
 		self.imgfile = image
 
+	# access to send resource
 	def send(self, to=None, text=None, sender=None, mtype=None, subject=None, image=None, datetime=None, extension=None):
 		if type(to) == list:
 			to = ','.join(to)
@@ -151,8 +177,11 @@ class rest:
 		else:
 			files = {}
 
-		status, reason, response = post_multipart(host, selector, fields, files)
-		print response
+		try:
+			status, reason, response = post_multipart(host, selector, fields, files)
+		except:
+			self.__set_error__("could not connect to server")
+			return False
 		if status != 200:
 			try:
 				err = json.loads(response)
@@ -163,6 +192,7 @@ class rest:
 			return False
 		return json.loads(response)
 
+	# access to sent resource
 	def status(self, page = 1, count = 20, s_rcpt = None, s_start = None, s_end = None, mid = None):
 		params = dict()
 		if page:
@@ -180,15 +210,21 @@ class rest:
 		response, obj = self.request_get('sent', params)
 		return obj
 
-	def line_status(self):
-		response, obj = self.request_get('status')
+	# access to status resource
+	def line_status(self, count = 1):
+		params = dict()
+		if count:
+			params['count'] = count
+		response, obj = self.request_get('status', params)
 		return obj
 
+	# access to balance resource
 	def balance(self):
 		timestamp, salt, signature = self.__get_signature__()
 		response, obj = self.request_get('balance')
 		return int(obj['cash']), int(obj['point'])
 
+	# access to cancel resource
 	def cancel(self, mid = None, gid = None):
 		if mid == None and gid == None:
 			return False
@@ -210,7 +246,7 @@ class rest:
 		if params:
 			base_params = dict(base_params.items() + params.items())
 		params_str = urllib.urlencode(base_params)
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "Python/1.0beta"}
 		conn = httplib.HTTPSConnection(self.host, self.port)
 		conn.request("GET", "/%s/%s?" % (self.version, resource) + params_str, None, headers)
 		response = conn.getresponse()
@@ -225,7 +261,7 @@ class rest:
 		if params:
 			base_params = dict(base_params.items() + params.items())
 		params_str = urllib.urlencode(base_params)
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "Python/1.0beta"}
 		conn = httplib.HTTPSConnection(self.host, self.port)
 		conn.request("GET", "/%s/%s?" % (self.version, resource) + params_str, None, headers)
 		response = conn.getresponse()
