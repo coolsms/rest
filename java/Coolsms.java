@@ -17,7 +17,7 @@ import org.json.simple.JSONValue;
  *  RestApi JAVA 
  *  v0.1 BETA  
  */
- 
+
 public class Coolsms {
 	private String api_key;
 	private String api_secret;	
@@ -252,20 +252,24 @@ public class Coolsms {
 
 			String inputLine; // 서버로 부터 받은 response를 받을 변수
 			int responseCode = conn.getResponseCode();
-
+			
 			if (responseCode != 200) // 오류발생시
 			{
-				response = getErrorString(responseCode);
-			} else {
-				BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				while ((inputLine = in.readLine()) != null) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						conn.getErrorStream()));
+				while ((inputLine = in.readLine()) != null) {					
 					response = inputLine;
 				}
+			} else {
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						conn.getInputStream()));
+				while ((inputLine = in.readLine()) != null) {
+					response = inputLine;
+				}				
 			}
-
 			if (response != null) {
 				JSONObject obj = (JSONObject) JSONValue.parse(response);
-				if (obj != null) {					
+				if (obj.get("code") == null) {					
 					send = new SendResult();					
 					send.setGroup_id(obj.get("group_id") + "");					
 					send.setResult_code(obj.get("result_code") + "");
@@ -274,11 +278,11 @@ public class Coolsms {
 					send.setErrorCount(obj.get("error_count") + "");
 				} else {
 					send = new SendResult();
-					send.setErrorString(response);
+					send.setErrorString("Code : " +obj.get("code") + ", Message : " + obj.get("message"));
 				}
 			} else {
 				send = new SendResult();
-				send.setErrorString("서버로부터 받은 값이 없습니다.");
+				send.setErrorString("서버로부터 받은 값이 없습니다." );
 			}
 		} catch (Exception e) {
 			send = new SendResult();
@@ -342,7 +346,7 @@ public class Coolsms {
 		
 			if (response != null) {
 				JSONObject obj = (JSONObject) JSONValue.parse(response);
-				if (obj != null) {
+				if (obj.get("code") == null) {
 					JSONArray array = (JSONArray) obj.get("data");
 					sent = new SentResult[array.size()];
 					for (int i = 0; array.size() > i; i++) {
@@ -366,7 +370,7 @@ public class Coolsms {
 				} else {
 					sent = new SentResult[1];
 					sent[0] = new SentResult();
-					sent[0].setErrorString(response);
+					sent[0].setErrorString("Code : " +obj.get("code") + ", Message : " + obj.get("message"));
 				}
 			} else {
 				sent = new SentResult[1];
@@ -431,31 +435,36 @@ public class Coolsms {
 
 			if (responseCode != 200) // 오류발생시
 			{
-				response = getErrorString(responseCode);
-			} else {
-				BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						conn.getErrorStream()));
 				while ((inputLine = in.readLine()) != null) {
 					response = inputLine;
 				}
+			} else {
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						conn.getInputStream()));
+				while ((inputLine = in.readLine()) != null) {
+					response = inputLine;
+				}
+			}
 
-				if (response != null) {
-					JSONObject obj = (JSONObject) JSONValue.parse(response);
-					if (obj != null) {
-						cancel = new CancelResult();
-					} else {
-						cancel = new CancelResult();
-						cancel.setErrorString(response);
-					}
+			if (response != null) {
+				JSONObject obj = (JSONObject) JSONValue.parse(response);
+				if (obj.get("code") == null) {
+					cancel = new CancelResult();
 				} else {
 					cancel = new CancelResult();
-				}	
-			}
+					cancel.setErrorString("Code : " + obj.get("code")
+							+ ", Message : " + obj.get("message"));
+				}
+			} else {
+				cancel = new CancelResult();
+			}	
+			
 		} catch (Exception e) {
-			e.printStackTrace();
 			cancel = new CancelResult();
 			cancel.setErrorString(e.getMessage());
 		}
-		
 		return cancel;
 	}
 
@@ -491,11 +500,11 @@ public class Coolsms {
 
 		if (response != null) {
 			JSONObject obj = (JSONObject) JSONValue.parse(response);
-			if (obj == null) {
-				balance.setErrorString(response);
-			} else {
+			if (obj.get("code") == null) {
 				balance.setCash(obj.get("cash"));
-				balance.setPoint(obj.get("point"));
+				balance.setPoint(obj.get("point"));				
+			} else {
+				balance.setErrorString(response);				
 			}
 		} else {
 			balance.setErrorString("서버로부터 받은 값이 없습니다.");
@@ -521,7 +530,6 @@ public class Coolsms {
 				while ((inputLine = in.readLine()) != null) {
 					response = inputLine;
 				}
-				response = getErrorString(responseCode);
 			} else {
 				BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				while ((inputLine = in.readLine()) != null) {
@@ -535,7 +543,7 @@ public class Coolsms {
 		return response;
 	}
 
-
+/*
 	private String getErrorString(int responseCode) {		
 		String errorString = "알수없는 오류";
 
@@ -555,7 +563,7 @@ public class Coolsms {
 
 		return errorString;
 	}
-
+*/
 	public String getSignature(String api_secret, String salt) {
 		long timestamp_long = System.currentTimeMillis() / 1000;
 		this.timestamp = Long.toString(timestamp_long);
