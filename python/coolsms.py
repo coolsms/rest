@@ -55,7 +55,7 @@ def get_content_type(filename):
 # SMS Gateway access url : https://api.coolsms.co.kr/{verson}/{resource name}
 class rest:
 	# SMS Gateway address
-	host = 't1.coolsms.co.kr'
+	host = 'api.coolsms.co.kr'
 
 	# use secure channel as default
 	port = 443
