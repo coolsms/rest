@@ -1,0 +1,24 @@
+﻿Build started 2014-12-02 오후 2:37:38.
+     1>Project "C:\Users\강현서\Documents\GitHub\rest\c\Coolsms\Coolsms.vcxproj" on node 2 (Build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\Coolsms.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\강현서\Documents\GitHub\rest\c\Coolsms\Include\jannson" /I"C:\Users\강현서\Documents\GitHub\rest\c\Coolsms\Include" /I"C:\Users\강현서\Documents\GitHub\rest\c\Coolsms\Include\Curl32\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt example_send.c
+         example_send.c
+     1>c:\users\강현서\documents\github\rest\c\coolsms\example_send.c(55): warning C4018: '<' : signed/unsigned mismatch
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\강현서\Documents\GitHub\rest\c\Debug\Coolsms.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\강현서\Documents\GitHub\rest\c\Coolsms\Include\Curl32\lib" /LIBPATH:"C:\Users\강현서\Documents\GitHub\rest\c\Coolsms\Include\jannson" jansson.lib libcurl.dll.a kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\강현서\Documents\GitHub\rest\c\Debug\Coolsms.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\강현서\Documents\GitHub\rest\c\Debug\Coolsms.lib" /MACHINE:X86 Debug\example_balance.obj
+         Debug\example_cancel.obj
+         Debug\example_send.obj
+         Debug\coolsms.obj
+         Debug\example_sent.obj
+         Debug\csmd5.obj
+         Coolsms.vcxproj -> C:\Users\강현서\Documents\GitHub\rest\c\Debug\Coolsms.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\Coolsms.tlog\unsuccessfulbuild".
+         Touching "Debug\Coolsms.tlog\Coolsms.lastbuildstate".
+     1>Done Building Project "C:\Users\강현서\Documents\GitHub\rest\c\Coolsms\Coolsms.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.05

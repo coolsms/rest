@@ -20,9 +20,9 @@ int main()
 	
 	/* set send infomations 
 	   More info found at http://doc.coolsms.co.kr?page_id=1811 */
-	coolsms_formset(&send_info, COOLSMS_TO, "01000000000");
-	coolsms_formset(&send_info, COOLSMS_FROM, "01000000000");
-	coolsms_formset(&send_info, COOLSMS_TEXT, "msg from c");
+	coolsms_formset(&send_info, COOLSMS_TO, "01000000000");			//받는 사람 번호
+	coolsms_formset(&send_info, COOLSMS_FROM, "01000000000");		//보내는 사람 번호
+	coolsms_formset(&send_info, COOLSMS_TEXT, "msg from c");		//문자 메시지
 	result = _send(&user_info, &send_info);
 	
 	print_result(result);
