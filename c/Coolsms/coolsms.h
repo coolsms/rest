@@ -25,6 +25,7 @@
 #define COOLSMS_SUBJECT 8
 #define COOLSMS_SRK 9
 #define COOLSMS_EXTENSION 10
+#define COOLSMS_CHARSET 11
 
 typedef struct { char api_key[32], api_secret[64], salt[32], signature[64], user_agent[32], timestamp[64]; }user_opt;
 typedef struct { char *to, *from, *text, *type, *image, *refname, *country, *datetime, *mid, *gid, *subject, *charset, *srk, *extension; }send_opt;

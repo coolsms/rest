@@ -22,7 +22,8 @@ int main()
 	   More info found at http://doc.coolsms.co.kr?page_id=1811 */
 	coolsms_formset(&send_info, COOLSMS_TO, "01000000000");			//받는 사람 번호
 	coolsms_formset(&send_info, COOLSMS_FROM, "01000000000");		//보내는 사람 번호
-	coolsms_formset(&send_info, COOLSMS_TEXT, "msg from c");		//문자 메시지
+	coolsms_formset(&send_info, COOLSMS_TEXT, "안녕하세요!~!~");		//문자 메시지
+	//coolsms_formset(&send_info, COOLSMS_CHARSET, "euckr");        //인코딩 설정 default = utf8 (윈도우는 euckr 로 설정하세요)
 	result = _send(&user_info, &send_info);
 	
 	print_result(result);

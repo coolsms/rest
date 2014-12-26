@@ -30,6 +30,7 @@ void get_timestamp(char *output)
 send_opt send_opt_init()
 {
 	send_opt send_info = { "\0", "\0", "\0", "\0", "\0", "\0", "\0", "\0", "\0", "\0", "\0", "\0", "\0", "\0" };
+	send_info.charset = strdup("utf8");
 	return send_info;
 }
 
@@ -172,6 +173,10 @@ void coolsms_formset(send_opt *s, int option, char * value)
 	case COOLSMS_SUBJECT: s->subject = strdup(value);
 		break;
 	case COOLSMS_SRK: s->srk = strdup(value);
+		break;
+	case COOLSMS_CHARSET: 
+		if (s->charset) free(s->charset);
+		s->charset = strdup(value);
 		break;
 	case COOLSMS_EXTENSION: s->extension = strdup(value);
 		break;
