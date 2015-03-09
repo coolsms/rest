@@ -20,9 +20,12 @@ int main()
 	
 	/* set send infomations 
 	   More info found at http://doc.coolsms.co.kr?page_id=1811 */
-	coolsms_formset(&send_info, COOLSMS_TO, "01000000000");			//받는 사람 번호
-	coolsms_formset(&send_info, COOLSMS_FROM, "01000000000");		//보내는 사람 번호
-	coolsms_formset(&send_info, COOLSMS_TEXT, "안녕하세요!~!~");		//문자 메시지
+	coolsms_formset(&send_info, COOLSMS_TO, "01021725487");						//받는 사람 번호
+	coolsms_formset(&send_info, COOLSMS_FROM, "01021725487");					//보내는 사람 번호
+	coolsms_formset(&send_info, COOLSMS_TEXT, "문자 테스팅 문자입니다. ");		//문자 메시지
+	//coolsms_formset(&send_info, COOLSMS_SUBJECT, "문자 테스팅");					//문자 제목 <---- LMS 나 MMS 만 적용
+	//coolsms_formset(&send_info, COOLSMS_TYPE, "mms");							//문자 타입
+	//coolsms_formset(&send_info, COOLSMS_IMAGE, "image.jpg");					//MMS 사진
 	//coolsms_formset(&send_info, COOLSMS_CHARSET, "euckr");        //인코딩 설정 default = utf8 (윈도우는 euckr 로 설정하세요)
 	result = _send(&user_info, &send_info);
 	

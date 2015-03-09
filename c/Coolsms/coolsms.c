@@ -227,6 +227,7 @@ int multi_part_curl_process(const user_opt *u, const send_opt *s, response_struc
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "to", CURLFORM_COPYCONTENTS, s->to, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "from", CURLFORM_COPYCONTENTS, s->from, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "text", CURLFORM_COPYCONTENTS, s->text, CURLFORM_END);
+	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "charset", CURLFORM_COPYCONTENTS, s->charset, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "type", CURLFORM_COPYCONTENTS, s->type, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "refname", CURLFORM_COPYCONTENTS, s->refname, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "datetime", CURLFORM_COPYCONTENTS, s->datetime, CURLFORM_END);
