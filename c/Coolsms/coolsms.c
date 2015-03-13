@@ -215,10 +215,11 @@ int multi_part_curl_process(const user_opt *u, const send_opt *s, response_struc
 	response.size = 0;    /* no data at this point */
 	
 	/* set url and initilize curl */
-	sprintf(url, "%s/%s/%s", "https://api.coolsms.co.kr/", VER, "send");
+	sprintf(url, "%s/%s/%s", "http://api.coolsms.co.kr/", VER, "send");
 	curl = curl_easy_init();
 
 	/* set values to curl_form */
+	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "subject", CURLFORM_COPYCONTENTS, s->subject, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "api_key", CURLFORM_COPYCONTENTS, u->api_key, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "salt", CURLFORM_COPYCONTENTS, u->salt, CURLFORM_END);
 	curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "signature", CURLFORM_COPYCONTENTS, u->signature, CURLFORM_END);
@@ -273,9 +274,9 @@ int curl_process(char *options, char *path, int method, response_struct *output)
 	
 	/* set url */
 	if (method)
-		sprintf(url, "%s/%s/%s", "https://api.coolsms.co.kr/", VER, path);
+		sprintf(url, "%s/%s/%s", "http://api.coolsms.co.kr/", VER, path);
 	else
-		sprintf(url, "%s/%s/%s?%s", "https://api.coolsms.co.kr/", VER, path, options);
+		sprintf(url, "%s/%s/%s?%s", "http://api.coolsms.co.kr/", VER, path, options);
 	
 	/* initialize curl */
 	curl_global_init(CURL_GLOBAL_DEFAULT);
