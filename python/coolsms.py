@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """
- Copyright (C) 2008-2014 NURIGO
+ Copyright (C) 2008-2015 NURIGO
  http://www.coolsms.co.kr
 """
 
@@ -61,8 +61,8 @@ class rest:
 	# use secure channel as default
 	port = 443
 
-	# protocol version
-	version = '1.5'
+	# api version
+	api_version = '1.5'
 
 	# API Key
 	api_key = None
@@ -85,14 +85,19 @@ class rest:
 	# TRUE : test mode
 	test = False
 
+	# application version
+	app_version = 'APP 1.0'
+
 	# constructor
-	def __init__(self, api_key, api_secret, srk = None, test = False, version = None):
+	def __init__(self, api_key, api_secret, app_version = None, srk = None, test = False, api_version = None):
 		self.api_key = api_key
 		self.api_secret = api_secret
 		self.srk = srk
+		if app_version:
+			self.app_version = app_version
 		self.test = test
-		if version:
-			self.version = version
+		if api_version:
+			self.api_version = api_version
 
 	# return salt, timestamp, signature
 	def __get_signature__(self):
@@ -125,7 +130,7 @@ class rest:
 		self.imgfile = image
 
 	# access to send resource
-	def send(self, to=None, text=None, sender=None, mtype=None, subject=None, image=None, datetime=None, extension=None, app_version="APP 1.0"):
+	def send(self, to=None, text=None, sender=None, mtype=None, subject=None, image=None, datetime=None, extension=None, app_version=None):
 		"""Request to REST API server to send SMS messages
 
 		Arguments:
@@ -156,6 +161,8 @@ class rest:
 		os_platform = platform.system()
 		dev_lang = "Python %s" % platform.python_version()
 		sdk_version = "sms-python %s" % __version__
+		if app_version:
+			self.app_version = app_version
 
 		# get authentication info.
 		timestamp, salt, signature = self.__get_signature__()
@@ -168,7 +175,7 @@ class rest:
 					, 'os_platform':os_platform
 					, 'dev_lang':dev_lang
 					, 'sdk_version':sdk_version
-					, 'app_version':app_version}
+					, 'app_version':self.app_version}
 		if self.test:
 			fields['mode'] = 'test'
 		if self.srk != None:
@@ -208,7 +215,7 @@ class rest:
 
 		# request post multipart-form
 		host = self.host + ':' + str(self.port)
-		selector = "/sms/%s/send" % self.version
+		selector = "/sms/%s/send" % self.api_version
 
 		try:
 			status, reason, response = post_multipart(host, selector, fields, files)
@@ -281,7 +288,7 @@ class rest:
 		params_str = urllib.urlencode(base_params)
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "sms-python"}
 		conn = httplib.HTTPSConnection(self.host, self.port)
-		conn.request("GET", "/sms/%s/%s?" % (self.version, resource) + params_str, None, headers)
+		conn.request("GET", "/sms/%s/%s?" % (self.api_version, resource) + params_str, None, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()
@@ -296,7 +303,7 @@ class rest:
 		params_str = urllib.urlencode(base_params)
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "sms-python"}
 		conn = httplib.HTTPSConnection(self.host, self.port)
-		conn.request("POST", "/sms/%s/%s?" % (self.version, resource) + params_str, None, headers)
+		conn.request("POST", "/sms/%s/%s?" % (self.api_version, resource) + params_str, None, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()
