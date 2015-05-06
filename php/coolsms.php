@@ -11,7 +11,7 @@ class coolsms
 {
 	private $api_key;
 	private	$api_secret;
-	private $host = "http://rest1.coolsms.co.kr/sms";
+	private $host = "http://api.coolsms.co.kr/sms";
 	private $version = "1.5";
 	private $sdk_version = "1.1";
 	private $path;
