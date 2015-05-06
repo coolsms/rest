@@ -17,6 +17,9 @@ def main():
 	status = cool.send(to,message,sender)
 	print status
 
+	if status == False:
+		print "ERROR: %s" % cool.get_error()
+
 if __name__ == "__main__":
 	main()
 	sys.exit(0)

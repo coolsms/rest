@@ -4,10 +4,11 @@
  http://www.coolsms.co.kr
 """
 
-__version__ = "1.0beta"
+__version__ = "1.1"
 
 from hashlib import md5
 import sys,httplib,urllib,hmac,mimetypes,uuid,json,time
+import platform
 # reload(sys) needs to use sys.setdefaultencoding()
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -19,7 +20,7 @@ def post_multipart(host, selector, fields, files):
 	h.putrequest('POST', selector)
 	h.putheader('content-type', content_type)
 	h.putheader('content-length', str(len(body)))
-	h.putheader('User-Agent', 'Python/1.0beta')
+	h.putheader('User-Agent', 'sms-python')
 	h.endheaders()
 	h.send(body)
 	errcode, errmsg, headers = h.getreply()
@@ -61,7 +62,7 @@ class rest:
 	port = 443
 
 	# protocol version
-	version = '1'
+	version = '1.5'
 
 	# API Key
 	api_key = None
@@ -124,7 +125,24 @@ class rest:
 		self.imgfile = image
 
 	# access to send resource
-	def send(self, to=None, text=None, sender=None, mtype=None, subject=None, image=None, datetime=None, extension=None):
+	def send(self, to=None, text=None, sender=None, mtype=None, subject=None, image=None, datetime=None, extension=None, app_version="APP 1.0"):
+		"""Request to REST API server to send SMS messages
+
+		Arguments:
+			to : A comma seperated string which contains phone numbers.
+			text : Message content
+			sender : sender id
+			mtype : one of sms, lms, mms
+			subject : If you send LMS or MMS, you should input the subject of the message(s).
+			image : Include image, when you send MMS.
+			datetime : Use this field when you send scheduled messages.
+			extension : JSON formatted string. Please refer to API document.
+			app_version : You'd better set this field as your own application's name. It's useful when you need any helf from COOLSMS service center.
+
+		Returns:
+			A JSON type string will be returned. On failure, False will be returned.
+		"""
+		# convert list to a comma seperated string
 		if type(to) == list:
 			to = ','.join(to)
 
@@ -135,11 +153,22 @@ class rest:
 		else:
 			mtype = self.get_type()
 
+		os_platform = platform.system()
+		dev_lang = "Python %s" % platform.python_version()
+		sdk_version = "sms-python %s" % __version__
+
+		# get authentication info.
 		timestamp, salt, signature = self.__get_signature__()
 
-		host = self.host + ':' + str(self.port)
-		selector = "/%s/send" % self.version
-		fields = {'api_key':self.api_key, 'timestamp':timestamp, 'salt':salt, 'signature':signature.hexdigest(), 'type':mtype}
+		fields = {'api_key':self.api_key
+					, 'timestamp':timestamp
+					, 'salt':salt
+					, 'signature':signature.hexdigest()
+					, 'type':mtype
+					, 'os_platform':os_platform
+					, 'dev_lang':dev_lang
+					, 'sdk_version':sdk_version
+					, 'app_version':app_version}
 		if self.test:
 			fields['mode'] = 'test'
 		if self.srk != None:
@@ -176,6 +205,10 @@ class rest:
 			files = {'image':{'filename':image,'content':content}}
 		else:
 			files = {}
+
+		# request post multipart-form
+		host = self.host + ':' + str(self.port)
+		selector = "/sms/%s/send" % self.version
 
 		try:
 			status, reason, response = post_multipart(host, selector, fields, files)
@@ -246,9 +279,9 @@ class rest:
 		if params:
 			base_params = dict(base_params.items() + params.items())
 		params_str = urllib.urlencode(base_params)
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "Python/1.0beta"}
+		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "sms-python"}
 		conn = httplib.HTTPSConnection(self.host, self.port)
-		conn.request("GET", "/%s/%s?" % (self.version, resource) + params_str, None, headers)
+		conn.request("GET", "/sms/%s/%s?" % (self.version, resource) + params_str, None, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()
@@ -261,9 +294,9 @@ class rest:
 		if params:
 			base_params = dict(base_params.items() + params.items())
 		params_str = urllib.urlencode(base_params)
-		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "Python/1.0beta"}
+		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "sms-python"}
 		conn = httplib.HTTPSConnection(self.host, self.port)
-		conn.request("GET", "/%s/%s?" % (self.version, resource) + params_str, None, headers)
+		conn.request("POST", "/sms/%s/%s?" % (self.version, resource) + params_str, None, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()

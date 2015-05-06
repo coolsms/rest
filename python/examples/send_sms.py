@@ -16,6 +16,8 @@ def main():
 	cool = coolsms.rest(api_key, api_secret)
 	status = cool.send(to,message,sender)
 	print status
+	if status == False:
+		print "ERROR: %s" % cool.get_error()
 
 if __name__ == "__main__":
 	main()
