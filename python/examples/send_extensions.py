@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """
- Copyright (C) 2008-2014 NURIGO
+ Copyright (C) 2008-2015 NURIGO
  http://www.coolsms.co.kr
 """
 import sys,json
@@ -15,7 +15,7 @@ def main():
 	message = '테스트 메시지'
 	data = [ {"to":"01000000001", "text":"Hello A"}, {"to":"01000000002", "text":"Hello B"} ]
 	extension = json.dumps(data)
-	cool = coolsms.rest(api_key, api_secret)
+	cool = coolsms.rest(api_key, api_secret, 'Example 1.0')
 	status = cool.send(to,message,sender,extension=extension)
 	print status
 
