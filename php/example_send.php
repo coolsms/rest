@@ -27,6 +27,7 @@ $options->to = '01000000000';
 $options->from = '01000000000';
 $options->type = 'SMS';
 $options->text = '안녕하세요. 10000건을 20초안에 발송하는 빠르고 저렴한 CoolSMS의 테스팅 문자입니다. ';
+$options->app_version = 'test app 1.2';  //application name and version	 
 
 // Optional parameters for your own needs
 //$options->image = 'desert.jpg'; 			//image for MMS. type must be set as 'MMS'
@@ -44,7 +45,6 @@ $options->text = '안녕하세요. 10000건을 20초안에 발송하는 빠르�
 //$options->os_platform = 'Windows 7';		//Operating System. SDK creates automatically if empty 
 //$options->dev_lang = 'PHP 5.3.3';			//Application development language. SDK creates automatically if empty 
 //$options->sdk_version = 'PHP SDK 1.1';	//SDK version being used. SDK creates automatically if empty 
-//$options->app_version = 'ooo app 1.2'; 	//App version being used. SDK creates automatically if empty 
 
 $result = $rest->send($options);			
 print_r($result);
