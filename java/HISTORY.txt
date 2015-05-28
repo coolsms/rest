@@ -1,1 +1,7 @@
+﻿2015-05-28 REST-API JAVA  v1.1
+	- request URL 을 https://api.coolsms.co.kr/sms/1.4/로 변경
+	- 사용법 변경
+	- 파일 정리
+	- 코드 정리
+
 2014-02-27 REST-API JAVA  v1.0
