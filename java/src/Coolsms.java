@@ -50,7 +50,10 @@ public class Coolsms extends Https {
 			set.put("salt", salt);
 			set.put("signature", signature);
 			set.put("timestamp", timestamp);
-			
+			set.put("os_platform", "JAVA SE Development Kit 8");
+			set.put("dev_lang", "JAVA 1.8.0_45");
+			set.put("sdk_version", "JAVA SDK 1.1");
+
 			StringBuffer postDataBuilder = new StringBuffer();
 			postDataBuilder.append(delimiter);
 			

@@ -23,6 +23,7 @@ public class SendExample {
 		set.put("from", "029302266"); // 보내는사람 번호
 		set.put("text", "Test Message"); // 문자내용
 		set.put("type", "sms"); // 문자 타입
+		set.put("app_version", ""); // 어플리케이션 버젼 예) Purplebook 4.1
 
 		/*
 		set.put("to", "01000000000, 01000000001"); // 받는사람 번호 여러개 입력시

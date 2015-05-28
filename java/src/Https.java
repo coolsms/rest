@@ -15,7 +15,7 @@ import org.json.simple.JSONValue;
  */
 public class Https
 {
-	private String url = "https://api.coolsms.co.kr/sms/1.4/";
+	private String url = "https://api.coolsms.co.kr/sms/1.5/";
 
 	/*
 	 * postRequest (POST)
