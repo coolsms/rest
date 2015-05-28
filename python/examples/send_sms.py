@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """
- Copyright (C) 2008-2014 NURIGO
+ Copyright (C) 2008-2015 NURIGO
  http://www.coolsms.co.kr
 """
 import sys
@@ -13,9 +13,11 @@ def main():
 	to = '01000000000'
 	sender = '01012345678'
 	message = '테스트 메시지'
-	cool = coolsms.rest(api_key, api_secret)
+	cool = coolsms.rest(api_key, api_secret, 'Example 1.0')
 	status = cool.send(to,message,sender)
 	print status
+	if status == False:
+		print "ERROR: %s" % cool.get_error()
 
 if __name__ == "__main__":
 	main()

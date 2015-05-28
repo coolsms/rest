@@ -13,7 +13,7 @@ def main():
 	to = '01000000000'
 	sender = '01012345678'
 	message = '테스트 메시지'
-	cool = coolsms.rest(api_key, api_secret)
+	cool = coolsms.rest(api_key, api_secret, 'Example 1.0')
 	status = cool.send(to,message,sender,datetime='20140213140000')
 	print status
 
