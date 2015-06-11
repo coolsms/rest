@@ -1,0 +1,96 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{7A330009-48F9-4195-9BC6-9462FF5DCF01}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="register_example.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="verify_example.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="list_example.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="set_default_example.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="get_default_example.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="delete_example.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="register_example">
+        <MSBuild Projects="register_example.dproj"/>
+    </Target>
+    <Target Name="register_example:Clean">
+        <MSBuild Projects="register_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="register_example:Make">
+        <MSBuild Projects="register_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="verify_example">
+        <MSBuild Projects="verify_example.dproj"/>
+    </Target>
+    <Target Name="verify_example:Clean">
+        <MSBuild Projects="verify_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="verify_example:Make">
+        <MSBuild Projects="verify_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="list_example">
+        <MSBuild Projects="list_example.dproj"/>
+    </Target>
+    <Target Name="list_example:Clean">
+        <MSBuild Projects="list_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="list_example:Make">
+        <MSBuild Projects="list_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="set_default_example">
+        <MSBuild Projects="set_default_example.dproj"/>
+    </Target>
+    <Target Name="set_default_example:Clean">
+        <MSBuild Projects="set_default_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="set_default_example:Make">
+        <MSBuild Projects="set_default_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="get_default_example">
+        <MSBuild Projects="get_default_example.dproj"/>
+    </Target>
+    <Target Name="get_default_example:Clean">
+        <MSBuild Projects="get_default_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="get_default_example:Make">
+        <MSBuild Projects="get_default_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="delete_example">
+        <MSBuild Projects="delete_example.dproj"/>
+    </Target>
+    <Target Name="delete_example:Clean">
+        <MSBuild Projects="delete_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="delete_example:Make">
+        <MSBuild Projects="delete_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="register_example;verify_example;list_example;set_default_example;get_default_example;delete_example"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="register_example:Clean;verify_example:Clean;list_example:Clean;set_default_example:Clean;get_default_example:Clean;delete_example:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="register_example:Make;verify_example:Make;list_example:Make;set_default_example:Make;get_default_example:Make;delete_example:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

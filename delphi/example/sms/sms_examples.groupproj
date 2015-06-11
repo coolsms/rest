@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{7A330009-48F9-4195-9BC6-9462FF5DCF01}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="sent_example.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="balance_exmaple.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="cancel_example.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="send_example.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="sent_example">
+        <MSBuild Projects="sent_example.dproj"/>
+    </Target>
+    <Target Name="sent_example:Clean">
+        <MSBuild Projects="sent_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="sent_example:Make">
+        <MSBuild Projects="sent_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="balance_exmaple">
+        <MSBuild Projects="balance_exmaple.dproj"/>
+    </Target>
+    <Target Name="balance_exmaple:Clean">
+        <MSBuild Projects="balance_exmaple.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="balance_exmaple:Make">
+        <MSBuild Projects="balance_exmaple.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="cancel_example">
+        <MSBuild Projects="cancel_example.dproj"/>
+    </Target>
+    <Target Name="cancel_example:Clean">
+        <MSBuild Projects="cancel_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="cancel_example:Make">
+        <MSBuild Projects="cancel_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="send_example">
+        <MSBuild Projects="send_example.dproj"/>
+    </Target>
+    <Target Name="send_example:Clean">
+        <MSBuild Projects="send_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="send_example:Make">
+        <MSBuild Projects="send_example.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="sent_example;balance_exmaple;cancel_example;send_example"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="sent_example:Clean;balance_exmaple:Clean;cancel_example:Clean;send_example:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="sent_example:Make;balance_exmaple:Make;cancel_example:Make;send_example:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
