@@ -19,11 +19,11 @@ begin
   try
     // api_key, api_secret 설정
     coolsms := handler.Create;
-    coolsms.setApiKey('NCS52A122858B04F', '8B2AE5A6926C9AE081920A085BFB835A');
+    coolsms.setApiKey('NCS52B122858C04F', '8BAAE5A5926C9AE081920A085BFB835A');
 
     // data 설정 mid나 gid 둘 중 하나는 들어가야 합니다.
     data := TStringList.create;
-    data.Values['mid'] := 'R2M557004D2DD1EE'; // 메시지ID
+    data.Values['mid'] := 'R2M547004D2DD1EE'; // 메시지ID
 
     // 그외 parameters, http://www.coolsms.co.kr/SMS_API#GETsent 참조
     {

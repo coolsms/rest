@@ -18,10 +18,10 @@ begin
   try
     // api_key, api_secret 설정
     coolsms := handler.Create;
-    coolsms.setApiKey('NCS52A122858B04F', '8B2AE5A6926C9AE081920A085BFB835A');
+    coolsms.setApiKey('NCS52B122858C04F', '8BAAE5A5926C9AE081920A085BFB835A');
 
     data := TStringList.create;
-    data.Values['to'] := '01090683469'; // 받는 번호
+    data.Values['to'] := '01000000000'; // 받는 번호
     data.Values['from'] := '029302266'; // 보내는 번호
     data.Values['text'] := 'test'; // 문자내용
     data.Values['type'] := 'sms';  // 문자타입 sms, mms, lms

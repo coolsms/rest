@@ -18,7 +18,7 @@ begin
 
     // api_key, api_secret 설정
     coolsms := handler.Create;
-    coolsms.setApiKey('NCS52A122858B04F', '8B2AE5A6926C9AE081920A085BFB835A');
+    coolsms.setApiKey('NCS52B122858C04F', '8BAAE5A5926C9AE081920A085BFB835A');
 
     // data 설정
     data := TStringList.create;
