@@ -303,9 +303,11 @@ class rest:
 		params_str = urllib.urlencode(base_params)
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "sms-python"}
 		conn = httplib.HTTPSConnection(self.host, self.port)
-		conn.request("POST", "/sms/%s/%s?" % (self.api_version, resource) + params_str, None, headers)
+		conn.request("POST", "/sms/%s/%s" % (self.api_version, resource), params_str, headers)
 		response = conn.getresponse()
 		data = response.read()
 		conn.close()
-		json_obj = json.loads(data)
+		json_obj = None
+		if data:
+			json_obj = json.loads(data)
 		return response, json_obj
