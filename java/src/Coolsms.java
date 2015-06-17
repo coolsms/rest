@@ -86,7 +86,7 @@ public class Coolsms extends Https {
 				response = https.postRequest("send", postDataBuilder, "", "");
 			}
 		} catch (Exception e) {
-			response.put("Code", "request error : " + e.getMessage());
+			response.put("code", "request error : " + e.getMessage());
 		}
 		return response;
 	}
