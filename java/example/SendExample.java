@@ -10,8 +10,8 @@ public class SendExample {
 		/*
 		 * 서버에서 받은 API_KEY, API_SECRET를 입력해주세요.
 		 */
-		String api_key = "NCS52A122851C04F";
-		String api_secret = "8B2AE5A6923C9BE081920A085BFB835A";
+		String api_key = "NCS5588FF5DE511A";
+		String api_secret = "4FB5FF3B9AC7D0E0AEB840D403DE0F74";
 		Coolsms coolsms = new Coolsms(api_key, api_secret);
 	
 		/*
@@ -19,7 +19,7 @@ public class SendExample {
 		 * 관련정보 : http://www.coolsms.co.kr/SDK_Java_API_Reference_ko#toc-0
 		 */
 		HashMap<String, String> set = new HashMap<String, String>();
-		set.put("to", "01000000000"); // 받는사람 번호
+		set.put("to", "010000000000"); // 받는사람 번호
 		set.put("from", "029302266"); // 보내는사람 번호
 		set.put("text", "Test Message"); // 문자내용
 		set.put("type", "sms"); // 문자 타입

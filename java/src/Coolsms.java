@@ -1,9 +1,9 @@
 import java.io.*;
-import java.net.URL;
 import java.net.URLEncoder;
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
+import java.util.Properties;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -14,7 +14,7 @@ import org.json.simple.JSONValue;
 /*
  * Coolsms Class
  * RestApi JAVA 
- * v0.1 BETA  
+ * v1.1 
  * POST?GET REQUEST
  */
 public class Coolsms extends Https {
@@ -22,9 +22,10 @@ public class Coolsms extends Https {
 	private String api_secret;	
 	private String timestamp;
 	private Https https = new Https();
+	Properties properties = System.getProperties();
 
 	/*
-	 * Set RestApi config
+	 * Set api_key, api_secret
 	 */
 	public Coolsms(String api_key, String api_secret) {
 		this.api_key = api_key;
@@ -41,22 +42,25 @@ public class Coolsms extends Https {
 
 		try {
 			String salt = salt();
-			String signature = getSignature(this.api_secret, salt); // getSignature
-			String boundary = "^***********^2193901290219219878wewe891283";
+			String signature = getSignature(this.api_secret, salt); 
+			String boundary = salt;
 			String delimiter = "\r\n--" + boundary + "\r\n";
-			
+
 			// 기본정보 입력
 			set.put("api_key", this.api_key);
 			set.put("salt", salt);
 			set.put("signature", signature);
 			set.put("timestamp", timestamp);
-			set.put("os_platform", "JAVA SE Development Kit 8");
-			set.put("dev_lang", "JAVA 1.8.0_45");
+			set.put("os_platform", properties.getProperty("os_name"));
+			set.put("dev_lang", "JAVA " + properties.getProperty("java.version"));
 			set.put("sdk_version", "JAVA SDK 1.1");
 
+			// poset data 생성 및 데이터 구분을 위한 delimiter 설정
 			StringBuffer postDataBuilder = new StringBuffer();
 			postDataBuilder.append(delimiter);
 			
+
+			// image가 있으면 변수에 담아 request를 다르게 보낸다
 			String image = "";
 			String image_path = "";
 			for (Entry<String, String> entry : set.entrySet()) {
@@ -74,15 +78,12 @@ public class Coolsms extends Https {
 				postDataBuilder = setPostData(postDataBuilder, key, value, delimiter);				
 			}
 			
+			
 			if (image != "") {
-				/*
-				 * SEND MMS
-				 */
+				// SEND MMS	
 				response = https.postRequest("send", postDataBuilder, image, image_path);				
 			} else {
-				/*
-				 * SEND SMS or LMS 
-				 */
+				// SEND SMS or LMS 
 				response = https.postRequest("send", postDataBuilder, "", "");
 			}
 		} catch (Exception e) {
@@ -136,7 +137,6 @@ public class Coolsms extends Https {
 	 */
 	public JSONObject cancel(HashMap<String, String> set) {
 		JSONObject obj = new JSONObject();
-		Https https = new Https();
 
 		if (set.get("mid") == null && set.get("gid") == null) {
 			obj.put("code", "Mid나 Gid중 하나는 반드시 들어가야 됩니다.");
@@ -146,7 +146,7 @@ public class Coolsms extends Https {
 		try {
 			String salt = salt();
 			String signature = getSignature(this.api_secret, salt); // getSignature
-			String boundary = "^***********^2193901290219219878wewe891283";
+			String boundary = salt;
 			String delimiter = "\r\n--" + boundary + "\r\n";
 
 			// 기본정보 입력
@@ -178,7 +178,7 @@ public class Coolsms extends Https {
 	public JSONObject balance() {
 		String charset = "utf8";
 		String salt = salt();
-		String signature = getSignature(this.api_secret, salt); // getSignature
+		String signature = getSignature(this.api_secret, salt); 
 		String data = null;
 
 		JSONObject response = new JSONObject();
@@ -192,8 +192,9 @@ public class Coolsms extends Https {
 
 			String response_string = null;
 			data = "balance" + "?" + data;		
-			response_string = https.request(data); // GET방식 전송	
 
+			// GET방식 전송	
+			response_string = https.request(data); 
 			if (response_string != null) {
 				JSONObject obj = (JSONObject) JSONValue.parse(response_string);
 				if (obj.get("code") == null) {
