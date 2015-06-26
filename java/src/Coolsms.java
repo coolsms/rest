@@ -43,7 +43,7 @@ public class Coolsms extends Https {
 		try {
 			String salt = salt();
 			String signature = getSignature(this.api_secret, salt); 
-			String boundary = salt;
+			String boundary = "^***********^2193901290219219878wewe891283";
 			String delimiter = "\r\n--" + boundary + "\r\n";
 
 			// 기본정보 입력
@@ -146,7 +146,7 @@ public class Coolsms extends Https {
 		try {
 			String salt = salt();
 			String signature = getSignature(this.api_secret, salt); // getSignature
-			String boundary = salt;
+			String boundary = "^***********^2193901290219219878wewe891283";
 			String delimiter = "\r\n--" + boundary + "\r\n";
 
 			// 기본정보 입력
