@@ -10,8 +10,8 @@ public class SendExample {
 		/*
 		 * 서버에서 받은 API_KEY, API_SECRET를 입력해주세요.
 		 */
-		String api_key = "NCS5588FF5DE511A";
-		String api_secret = "4FB5FF3B9AC7D0E0AEB840D403DE0F74";
+		String api_key = "C45588FB7DE511A";
+		String api_secret = "BB5FF8B9AB7D0E0AEB840D403DE0F74";
 		Coolsms coolsms = new Coolsms(api_key, api_secret);
 	
 		/*
@@ -23,8 +23,10 @@ public class SendExample {
 		set.put("from", "029302266"); // 보내는사람 번호
 		set.put("text", "Test Message"); // 문자내용
 		set.put("type", "sms"); // 문자 타입
-		set.put("app_version", ""); // 어플리케이션 버젼 예) Purplebook 4.1
 
+		/*
+		 * Option Parameters
+		 */
 		/*
 		set.put("to", "01000000000, 01000000001"); // 받는사람 번호 여러개 입력시
 		set.put("image_path", "../images/"); // image file path 이미지 파일 경로 설정 (기본 "./")
@@ -36,39 +38,24 @@ public class SendExample {
 		set.put("charset", "utf8"); // 인코딩 방식
 		set.put("srk", ""); // 솔루션 제공 수수료를 정산받을 솔루션 등록키
 		set.put("mode", "test"); // test모드 수신번호를 반드시 01000000000 으로 테스트하세요. 예약필드 datetime는 무시됨. 결과값은 60. 잔액에서 실제 차감되며 다음날 새벽에 재충전됨
+		set.put("app_version", ""); // 어플리케이션 버젼 예) Purplebook 4.1
+		set.put("datetime", "201701151230"); // 예약전송시 날짜 설정		
 		*/
 
-		
-		/*
-		 * 개별문자 보내기
-		 */
-
-		/*
-		HashMap<String, String> set = new HashMap<String, String>(); 
-		JSONObject obj = new JSONObject();
-		JSONArray list = new JSONArray();
-		
-		obj.put("type", "sms"); // 문자타입
-		obj.put("to", "01000000000, 01000000001"); // 받는사람번호
-		obj.put("text", "Test Message"); // 문자내용
-			
-		list.add(obj); // 원하는 만큼 obj를 넣어주면 됩니다.		
-		set.put("extension", list.toString()); // set extension
-		*/
-		
 		JSONObject result = coolsms.send(set); // 보내기&전송결과받기
-		if (result.get("code") == null) {
+		if ((Boolean) result.get("status") == true) {
 			// 메시지 보내기 성공 및 전송결과 출력
 			System.out.println("성공");			
 			System.out.println(result.get("group_id")); // 그룹아이디
 			System.out.println(result.get("result_code")); // 결과코드
-			System.out.println(result.get("result_message"));  // 결과 메시지
-			System.out.println(result.get("success_count")); // 메시지아이디
-			System.out.println(result.get("error_count"));  // 여러개 보낼시 오류난 메시지 수
+			System.out.println(result.get("result_message"));  // 결과메시지
+			System.out.println(result.get("success_count")); // 성공갯수
+			System.out.println(result.get("error_count"));  // 발송실패 메시지 수
 		} else {
 			// 메시지 보내기 실패
 			System.out.println("실패");
-			System.out.println(result.get("code")); // 에러 메시지
+			System.out.println(result.get("code")); // REST API 에러코드
+			System.out.println(result.get("message")); // 에러메시지
 		}		
 	}	
 }

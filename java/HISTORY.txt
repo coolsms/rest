@@ -1,4 +1,10 @@
-﻿2015-05-28 REST-API JAVA  v1.1
+﻿2015-07-01 REST-API JAVA  v1.2
+	- 소스코드 정리
+	- code가 아닌 status로 결과 판단
+	- message로 에러 메시지 출력
+	- http 에러 핸들링 추가
+
+2015-05-28 REST-API JAVA  v1.1
 	- request URL 을 https://api.coolsms.co.kr/sms/1.4/로 변경
 	- 사용법 변경
 	- 파일 정리
