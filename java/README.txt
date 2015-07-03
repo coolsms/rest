@@ -5,26 +5,25 @@ Version : 1.2
 
 Registration date : 2015-07-01
 
-Infomation : REST-JAVA´Â REST-API°³³äÀ» »ç¿ëÇÏ¿© º¸´Ù ½±°í ºü¸£°Ô ¹®ÀÚ¼­ºñ½º¸¦ Àü¼ÛÇÒ ¼ö ÀÖ´Â SDKÀÔ´Ï´Ù.
+Infomation : REST-JAVAëŠ” REST-APIê°œë…ì„ ì‚¬ìš©í•˜ì—¬ ë³´ë‹¤ ì‰½ê³  ë¹ ë¥´ê²Œ ë¬¸ìì„œë¹„ìŠ¤ë¥¼ ì „ì†¡í•  ìˆ˜ ìˆëŠ” SDKì…ë‹ˆë‹¤.
 
-License : ±âº»ÀûÀ¸·Î BSD ¶óÀÌ¼¾½º¿¡ µû¶ó ¼Ò½ºÄÚµå¸¦ ¼öÁ¤ ¹× ¹èÆ÷°¡´ÉÇÕ´Ï´Ù.
+License : ê¸°ë³¸ì ìœ¼ë¡œ BSD ë¼ì´ì„¼ìŠ¤ì— ë”°ë¼ ì†ŒìŠ¤ì½”ë“œë¥¼ ìˆ˜ì • ë° ë°°í¬ê°€ëŠ¥í•©ë‹ˆë‹¤.
 
-Contributing : Encoding Àº UTF-8·Î ÇÏ¼Å¾ß ÇÕ´Ï´Ù. 
+Contributing : Encoding ì€ UTF-8ë¡œ í•˜ì…”ì•¼ í•©ë‹ˆë‹¤. 
 
 Contributing URL : http://www.coolsms.co.kr/SDK_Java_ko
 
 File composition : 
 
-src/Coolsms.java                          ¼Ò½º ÆÄÀÏ
-src/Https.java                            ±âº»Á¤º¸ ÀÔ·ÂÆÄÀÏ.
-example/SendExample.java                  ¹®ÀÚÀü¼Û ¿¹Á¦.
-example/SendExtensionExample.java         °³º°Àü¼Û ¿¹Á¦.
-example/SentExample.java                  Àü¼Û³»¿ªº¸±â ¿¹Á¦.
-example/CancelExample.java                ¿¹¾àÃë¼Ò ¿¹Á¦.
-example/BalanceExample.java               ÀÜ¾×È®ÀÎ ¿¹Á¦.
+src/Coolsms.java                          ì†ŒìŠ¤ íŒŒì¼
+src/Https.java                            ê¸°ë³¸ì •ë³´ ì…ë ¥íŒŒì¼.
+example/SendExample.java                  ë¬¸ìì „ì†¡ ì˜ˆì œ.
+example/SendExtensionExample.java         ê°œë³„ì „ì†¡ ì˜ˆì œ.
+example/SentExample.java                  ì „ì†¡ë‚´ì—­ë³´ê¸° ì˜ˆì œ.
+example/CancelExample.java                ì˜ˆì•½ì·¨ì†Œ ì˜ˆì œ.
+example/BalanceExample.java               ì”ì•¡í™•ì¸ ì˜ˆì œ.
 
-lib/json-simple-1.1.1.jar                 jsone-simple ¶óÀÌºê·¯¸®
-images/test.jpg                           MMS Àü¼Û Å×½ºÆ®¸¦ À§ÇÑ Image File
-HISTORY.txt                               Update ³»¿ª
+lib/json-simple-1.1.1.jar                 jsone-simple ë¼ì´ë¸ŒëŸ¬ë¦¬
+images/test.jpg                           MMS ì „ì†¡ í…ŒìŠ¤íŠ¸ë¥¼ ìœ„í•œ Image File
+HISTORY.txt                               Update ë‚´ì—­
 README.txt                                SDK Java Info
-	
