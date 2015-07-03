@@ -10,8 +10,8 @@ public class SentExample {
 		/*
 		 * 서버에서 받은 API_KEY, API_SECRET를 입력해주세요.
 		 */
-		String api_key = "NCS52B222858B03F";
-		String api_secret = "8B2AE5A6926B9AE091910A085BFB835A";
+		String api_key = "CS588FB7DE511A";
+		String api_secret = "B5FF8B9AB7D0E0AEB840D403DE0F74";
 		Coolsms coolsms = new Coolsms(api_key, api_secret);
 		
 		/*
@@ -19,8 +19,8 @@ public class SentExample {
 		 * 관련정보 : http://www.coolsms.co.kr/SDK_Java_API_Reference_ko#toc-1	
 		 */
 		HashMap<String, String> set = new HashMap<String, String>();
-		//set.put("mid", "R2M553DD58703AEC");  // message_id 
-		set.put("gid", "R1G5564CBC62E9A4"); // group_id
+		set.put("mid", "R2M553DD58703AEC");  // message_id 
+		//set.put("gid", "R1G55923A83639F0"); // group_id
 		//set.put("count", "20"); // count
 		//set.put("page", "1"); // page
 		//set.put("s_rcpt", "01025555544"); // 수신번호
@@ -28,7 +28,8 @@ public class SentExample {
 		//set.put("s_end", "2014-02-01 14:10:10");	//검색 종료 날짜
 		
 		JSONObject result = coolsms.sent(set);
-		if(result.get("code") == null) {
+
+		if((Boolean) result.get("status") == true) {
 			System.out.println("total_count is = " + result.get("total_count")); // Total Count
 			System.out.println("list_count is = " + result.get("list_count")); // List Count
 			System.out.println("page is = " + result.get("page")); // Page
@@ -51,7 +52,8 @@ public class SentExample {
 			}
 		} else {
 			System.out.println("SENT 실패");
-			System.out.println(result.get("code")); // 오류 메시지
+			System.out.println(result.get("code")); // REST API 에러코드
+			System.out.println(result.get("message")); // 에러메시지
 		}
 	}
 }
