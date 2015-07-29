@@ -5,7 +5,7 @@ program sent_example;
 {$R *.res}
 
 uses
-  System.Json, coolsms in 'C:\Users\Administrator\IdeaProjects\coolsms.pas', System.SysUtils, Classes;
+  System.Json, coolsms in '..\..\coolsms.pas', System.SysUtils, Classes;
 
 var
   coolsms: handler;
@@ -19,11 +19,11 @@ begin
   try
     // api_key, api_secret 설정
     coolsms := handler.Create;
-    coolsms.setApiKey('NCS52B122858C04F', '8BAAE5A5926C9AE081920A085BFB835A');
+    coolsms.setApiKey('NCS55882FB7DE511A', '4FB5FF82B9AB7D0E0AEB840D403DE0F74');
 
-    // data 설정 mid나 gid 둘 중 하나는 들어가야 합니다.
+    // parameters, data 설정 mid나 gid 둘 중 하나는 들어가야 합니다.
     data := TStringList.create;
-    data.Values['mid'] := 'R2M547004D2DD1EE'; // 메시지ID
+    data.Values['mid'] := 'R1M55B1FFB27E5308'; // 메시지ID
 
     // 그외 parameters, http://www.coolsms.co.kr/SMS_API#GETsent 참조
     {
@@ -38,10 +38,9 @@ begin
       gid	그룹ID
     }
 
+    // sent Messages
     jsonObject := coolsms.request('sent', data, 'sms');
-    Writeln(jsonObject.Get('code').Equals(Nil));
-
-    if jsonObject.Get('code').Equals(Nil) = TRUE then
+    if strToBool(jsonObject.GetValue('status').ToString) = TRUE then
     begin
       Writeln('성공');
       jsonArray := JsonObject.Get('data').JsonValue as TJSONArray;
@@ -72,8 +71,8 @@ begin
     else
     begin
       Writeln('실패');
-      Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
-      Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
+      if jsonObject.Get('code').Equals(Nil) = FALSE then Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
+      if jsonObject.Get('message').Equals(Nil) = FALSE then Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
     end;
 
     jsonObject.Free;

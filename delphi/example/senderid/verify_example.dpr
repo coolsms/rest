@@ -5,7 +5,7 @@ program verify_example;
 {$R *.res}
 
 uses
-  System.Json, coolsms in 'C:\Users\Administrator\IdeaProjects\coolsms.pas', System.SysUtils, Classes;
+  System.Json, coolsms in '..\..\coolsms.pas', System.SysUtils, Classes;
 
 var
   coolsms: handler;
@@ -18,23 +18,23 @@ begin
 
     // api_key, api_secret 설정
     coolsms := handler.Create;
-    coolsms.setApiKey('NCS52B122858C04F', '8BAAE5A5926C9AE081920A085BFB835A');
+    coolsms.setApiKey('2CS35588FB7DE511A', '2FB5FF8B9XB7D0E0AEB840D403DE0F74');
 
-    // data 설정
+    // parameters
     data := TStringList.create;
-    data.Values['handle_key'] := 'SID55793FC12DDA2'; // register 호출 후 리턴받은 핸들값
+    data.Values['handle_key'] := 'SID55B739E7A4E72'; // register 호출 후 리턴받은 핸들값
 
+    // 발신번호등록확인 요청
     jsonObject := coolsms.postRequest('verify', data, 'senderid');
-
-    if jsonObject.Get('code').Equals(Nil) = TRUE then
+    if strToBool(jsonObject.GetValue('status').ToString) = TRUE then
     begin
       Writeln('성공');
     end
     else
     begin
       Writeln('실패');
-      Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
-      Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
+      if jsonObject.Get('code').Equals(Nil) = FALSE then Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
+      if jsonObject.Get('message').Equals(Nil) = FALSE then Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
     end;
 
     jsonObject.Free;

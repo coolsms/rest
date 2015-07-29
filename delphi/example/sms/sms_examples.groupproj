@@ -15,6 +15,9 @@
         <Projects Include="send_example.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="send_extension_example.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +62,23 @@
     <Target Name="send_example:Make">
         <MSBuild Projects="send_example.dproj" Targets="Make"/>
     </Target>
+    <Target Name="send_extension_example">
+        <MSBuild Projects="send_extension_example.dproj"/>
+    </Target>
+    <Target Name="send_extension_example:Clean">
+        <MSBuild Projects="send_extension_example.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="send_extension_example:Make">
+        <MSBuild Projects="send_extension_example.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="sent_example;balance_exmaple;cancel_example;send_example"/>
+        <CallTarget Targets="sent_example;balance_exmaple;cancel_example;send_example;send_extension_example"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="sent_example:Clean;balance_exmaple:Clean;cancel_example:Clean;send_example:Clean"/>
+        <CallTarget Targets="sent_example:Clean;balance_exmaple:Clean;cancel_example:Clean;send_example:Clean;send_extension_example:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="sent_example:Make;balance_exmaple:Make;cancel_example:Make;send_example:Make"/>
+        <CallTarget Targets="sent_example:Make;balance_exmaple:Make;cancel_example:Make;send_example:Make;send_extension_example:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
