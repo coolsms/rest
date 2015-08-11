@@ -5,7 +5,7 @@ program list_example;
 {$R *.res}
 
 uses
-  System.Json, coolsms in 'C:\Users\Administrator\IdeaProjects\coolsms.pas', System.SysUtils, Classes;
+  System.Json, coolsms in '..\..\coolsms.pas', System.SysUtils, Classes;
 
 var
   coolsms: handler;
@@ -21,11 +21,11 @@ begin
 
     // api_key, api_secret 설정
     coolsms := handler.Create;
-    coolsms.setApiKey('NCS52B122858C04F', '8BAAE5A5926C9AE081920A085BFB835A');
+    coolsms.setApiKey('2CS35588FB7DE511A', '2FB5FF8B9XB7D0E0AEB840D403DE0F74');
 
+    // 발신번호 리스트 요청
     jsonObject := coolsms.request('list', Nil, 'senderid');
-
-    if jsonObject.Get('code').Equals(Nil) = TRUE then
+    if strToBool(jsonObject.GetValue('status').ToString) = TRUE then
     begin
       Writeln('성공');
       jsonArray := JsonObject.Get('data').JsonValue as TJSONArray;
@@ -50,8 +50,8 @@ begin
     else
     begin
       Writeln('실패');
-      Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
-      Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
+      if jsonObject.Get('code').Equals(Nil) = FALSE then Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
+      if jsonObject.Get('message').Equals(Nil) = FALSE then Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
     end;
 
     jsonObject.Free;

@@ -5,27 +5,26 @@ program send_example;
 {$R *.res}
 
 uses
-  System.Json, coolsms in 'C:\Users\Administrator\IdeaProjects\coolsms.pas', System.SysUtils, Classes;
+  System.Json, coolsms in '..\..\coolsms.pas', System.SysUtils, Classes;
 
 var
   coolsms: handler;
   jsonObject: TJSONObject;
   data: TStringList;
-  extensionObject: TJSONObject;
-  extensionArray: TJSONArray;
 
 begin
   try
     // api_key, api_secret 설정
     coolsms := handler.Create;
-    coolsms.setApiKey('NCS52B122858C04F', '8BAAE5A5926C9AE081920A085BFB835A');
+    coolsms.setApiKey('NCS55882FB7DE511A', '4FB5FF82B9AB7D0E0AEB840D403DE0F74');
 
+    // parameters
     data := TStringList.create;
     data.Values['to'] := '01000000000'; // 받는 번호
     data.Values['from'] := '029302266'; // 보내는 번호
     data.Values['text'] := 'test'; // 문자내용
-    data.Values['type'] := 'sms';  // 문자타입 sms, mms, lms
-    //data.Values['image'] := 'C:\Users\Administrator\sdk\new\rest\java\images\test.jpg'; // IMAGE 파일 (MMS일경우)
+    data.Values['type'] := 'mms';  // 문자타입 sms, mms, lms
+    data.Values['image'] := '..\..\test.jpg'; // IMAGE 파일 (MMS일경우)
 
     // 그외 parameters, http://www.coolsms.co.kr/SMS_API#POSTsend 참조
     {
@@ -58,27 +57,9 @@ begin
       extension	JSON 포맷의 개별 메시지를 담을 수 있음
     }
 
-    {
-      // 개별 메시지 보내기
-      extensionObject := TJSONObject.Create;
-      extensionArray := TJSONArray.Create;
-
-      extensionObject.AddPair('type', 'sms');
-      extensionObject.AddPair('to', '01000000003');
-      extensionObject.AddPair('text', 'sms_test');
-      extensionArray.Add(extensionObject);
-
-      extensionObject := TJSONObject.Create;
-      extensionObject.AddPair('type', 'sms');
-      extensionObject.AddPair('to', '01000000000, 010000000001');
-      extensionObject.AddPair('text', 'sms_test2');
-      extensionArray.Add(extensionObject);
-      data.Values['extension'] := extensionArray.ToString;
-    }
-
+    // send Messages
     jsonObject := coolsms.postRequest('send', data, 'sms');
-
-    if jsonObject.Get('code').Equals(Nil) = TRUE then
+    if strToBool(jsonObject.GetValue('status').ToString) = TRUE then
     begin
       Writeln('성공');
       Writeln('group_id : ' + jsonObject.Get('group_id').JsonValue.ToString);
@@ -90,15 +71,11 @@ begin
     else
     begin
       Writeln('실패');
-      Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
-
-      if jsonObject.Get('message').Equals(Nil) = FALSE then
-        Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
+      if jsonObject.Get('code').Equals(Nil) = FALSE then Writeln('code : ' + jsonObject.Get('code').JsonValue.ToString);
+      if jsonObject.Get('message').Equals(Nil) = FALSE then Writeln('message : ' + jsonObject.Get('message').JsonValue.ToString);
     end;
 
     jsonObject.Free;
-    extensionObject.Free;
-    extensionArray.Free;
 
     Writeln('-----------------------------------------');
     Writeln('Press <enter> to quit...');
